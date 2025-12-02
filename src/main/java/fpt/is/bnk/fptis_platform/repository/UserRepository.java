@@ -1,0 +1,34 @@
+package fpt.is.bnk.fptis_platform.repository;
+
+import fpt.is.bnk.fptis_platform.entity.Profile;
+import fpt.is.bnk.fptis_platform.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Admin 12/1/2025
+ *
+ **/
+public interface UserRepository extends JpaRepository<User, Long> {
+
+    @Query("""
+                select u from User u
+                left join fetch u.profile
+                where lower(u.username) = lower(:username)
+            """)
+    Optional<User> findByUsernameWithProfile(String username);
+
+    @Query("""
+                select u from User u
+                left join fetch u.profile
+                where lower(u.username) = lower(:username)
+            """)
+    Optional<User> findByEmailWithProfile(String email);
+
+    Optional<User> findUserByEmailIgnoreCase(String email);
+
+
+}
