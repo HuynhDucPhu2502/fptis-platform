@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.controller.authentication;
+package fpt.is.bnk.fptis_platform.controller.auth;
 
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;
 import fpt.is.bnk.fptis_platform.dto.PageResponse;
@@ -22,7 +22,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,7 +31,7 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
     UserService userService;

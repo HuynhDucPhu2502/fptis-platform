@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.controller.authentication;
+package fpt.is.bnk.fptis_platform.controller.auth;
 
 import fpt.is.bnk.fptis_platform.dto.identity.CheckPasswordRequest;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
  *
  **/
 @RestController
-@RequestMapping("/internal/users")
+@RequestMapping("/api/internal/users")
 @RequiredArgsConstructor
 public class RemoteUserController {
 
@@ -20,20 +20,17 @@ public class RemoteUserController {
 
     @GetMapping("/{username}")
     public ResponseEntity<RemoteUser> getByUsername(@PathVariable String username) {
-        System.out.println(username);
         RemoteUser user = service.getByUsername(username);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping("/email/{email}")
     public ResponseEntity<RemoteUser> getByEmail(@PathVariable String email) {
-        System.out.println(email);
         return ResponseEntity.ok(service.getByEmail(email));
     }
 
     @PostMapping("/auth/check")
     public ResponseEntity<Boolean> checkPassword(@RequestBody CheckPasswordRequest req) {
-        System.out.println(req);
         boolean ok = service.verifyPassword(req.getUsername(), req.getPassword());
         return ResponseEntity.ok(ok);
     }

@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.controller;
+package fpt.is.bnk.fptis_platform.controller.daily_log;
 
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;
 import fpt.is.bnk.fptis_platform.dto.PageResponse;
@@ -16,8 +16,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * Admin 11/28/2025
  *
@@ -25,7 +23,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("/daily-logs")
+@RequestMapping("/api/daily-logs")
 public class DailyLogController {
 
     DailyLogService dailyLogService;

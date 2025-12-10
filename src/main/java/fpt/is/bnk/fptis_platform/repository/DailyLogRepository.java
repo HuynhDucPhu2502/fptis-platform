@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -18,6 +19,8 @@ public interface DailyLogRepository extends JpaRepository<DailyLog, Long> {
                                                    Pageable pageable);
 
     Optional<DailyLog> findByIdAndProfile_ProfileId(Long id, Long profileUserId);
+
+    List<DailyLog> findByProfile_ProfileId(Long profileProfileId);
 
 
 }
