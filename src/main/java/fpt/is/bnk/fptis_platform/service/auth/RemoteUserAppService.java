@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.service.authentication;
+package fpt.is.bnk.fptis_platform.service.auth;
 
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 

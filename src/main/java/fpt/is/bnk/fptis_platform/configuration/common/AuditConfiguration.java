@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.configuration;
+package fpt.is.bnk.fptis_platform.configuration.common;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,7 @@ import java.util.Optional;
  *
  **/
 @Configuration
-public class CommonConfiguration {
+public class AuditConfiguration {
 
     @Bean
     public AuditorAware<String> auditorProvider() {

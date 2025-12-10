@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.configuration;
+package fpt.is.bnk.fptis_platform.configuration.auth;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

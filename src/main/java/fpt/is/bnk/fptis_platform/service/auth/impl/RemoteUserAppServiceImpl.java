@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.service.authentication.impl;
+package fpt.is.bnk.fptis_platform.service.auth.impl;
 
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 import fpt.is.bnk.fptis_platform.entity.User;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RemoteUserAppServiceImpl implements fpt.is.bnk.fptis_platform.service.authentication.RemoteUserAppService {
+public class RemoteUserAppServiceImpl implements fpt.is.bnk.fptis_platform.service.auth.RemoteUserAppService {
 
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;

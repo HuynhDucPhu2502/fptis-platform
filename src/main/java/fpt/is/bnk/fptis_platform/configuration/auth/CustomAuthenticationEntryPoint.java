@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.configuration;
+package fpt.is.bnk.fptis_platform.configuration.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;

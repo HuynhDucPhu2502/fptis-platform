@@ -1,11 +1,9 @@
-package fpt.is.bnk.fptis_platform.configuration;
+package fpt.is.bnk.fptis_platform.configuration.auth;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -47,29 +45,6 @@ public class SecurityConfiguration {
     };
 
     @Bean
-    @Order(1)
-    public SecurityFilterChain camundaFilterChain(
-            HttpSecurity http,
-            CustomAuthenticationEntryPoint customAuthenticationEntryPoint
-    ) throws Exception {
-
-        http
-                .securityMatcher("/engine-rest/**")
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().authenticated()
-                )
-                .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt.jwtAuthenticationConverter(new KeycloakJwtAuthConverter()))
-                        .authenticationEntryPoint(customAuthenticationEntryPoint)
-                );
-
-        return http.build();
-    }
-
-
-    @Bean
-    @Order(2)
     public SecurityFilterChain appSecurityFilterChain(
             HttpSecurity http,
             CustomAuthenticationEntryPoint customAuthenticationEntryPoint

@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.service.authentication.impl;
+package fpt.is.bnk.fptis_platform.service.auth.impl;
 
 import feign.FeignException;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
@@ -14,7 +14,7 @@ import fpt.is.bnk.fptis_platform.repository.IdentityClient;
 import fpt.is.bnk.fptis_platform.repository.ProfileRepository;
 import fpt.is.bnk.fptis_platform.repository.UserRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
-import fpt.is.bnk.fptis_platform.service.authentication.UserService;
+import fpt.is.bnk.fptis_platform.service.auth.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 /**

@@ -44,5 +44,13 @@ public class TestController {
         return "Process started";
     }
 
+    @GetMapping("/execute/test4")
+    public String execute4() {
+
+        runtimeService.startProcessInstanceByKey("diagram_5");
+
+        return "Process started";
+    }
+
 
 }

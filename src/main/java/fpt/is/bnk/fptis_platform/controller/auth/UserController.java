@@ -5,7 +5,7 @@ import fpt.is.bnk.fptis_platform.dto.PageResponse;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 import fpt.is.bnk.fptis_platform.dto.request.authentication.LoginRequest;
 import fpt.is.bnk.fptis_platform.dto.request.authentication.RegistrationRequest;
-import fpt.is.bnk.fptis_platform.service.authentication.UserService;
+import fpt.is.bnk.fptis_platform.service.auth.UserService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

@@ -2,7 +2,7 @@ package fpt.is.bnk.fptis_platform.controller.auth;
 
 import fpt.is.bnk.fptis_platform.dto.identity.CheckPasswordRequest;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
-import fpt.is.bnk.fptis_platform.service.authentication.RemoteUserAppService;
+import fpt.is.bnk.fptis_platform.service.auth.RemoteUserAppService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.service.authentication;
+package fpt.is.bnk.fptis_platform.service.auth;
 
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 import fpt.is.bnk.fptis_platform.dto.request.authentication.LoginRequest;
@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Map;
 
 /**
