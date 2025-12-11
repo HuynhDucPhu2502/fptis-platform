@@ -42,7 +42,7 @@ public class Profile extends BaseEntity {
     @JoinColumn(name = "user_id")
     User user;
 
-    @OneToMany(mappedBy = "profile")
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<DailyLog> dailyLogs;
 
 }

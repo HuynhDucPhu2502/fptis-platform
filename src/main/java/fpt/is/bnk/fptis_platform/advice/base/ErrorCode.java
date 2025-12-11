@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.exception;
+package fpt.is.bnk.fptis_platform.advice.base;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -20,6 +20,7 @@ public enum ErrorCode {
     USER_EXISTED(1010, "Tên đăng nhập đã tồn tại, vui lòng chọn tên khác", HttpStatus.BAD_REQUEST),
     USERNAME_IS_MISSING(1011, "Vui lòng nhập tên đăng nhập", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(1012, "Token không hợp lệ hoặc đã hết hạn", HttpStatus.UNAUTHORIZED),
+    INVALID_CREDENTIALS(1013, "Tên đăng nhập hoặc mật khẩu không đúng", HttpStatus.UNAUTHORIZED),
     ;
 
     private final int code;

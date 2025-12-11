@@ -1,5 +1,7 @@
-package fpt.is.bnk.fptis_platform.configuration.auth;
+package fpt.is.bnk.fptis_platform.configuration.auth.config;
 
+import fpt.is.bnk.fptis_platform.configuration.auth.entrypoint.CustomAuthenticationEntryPoint;
+import fpt.is.bnk.fptis_platform.configuration.auth.encoder.UsernameAwarePasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,7 +9,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -89,7 +90,7 @@ public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new UsernameAwarePasswordEncoder();
     }
 
 

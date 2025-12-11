@@ -34,6 +34,6 @@ public class User extends BaseEntity {
 
     String passwordHash;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     Profile profile;
 }

@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.dto.identity;
+package fpt.is.bnk.fptis_platform.dto.identity.internal;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,6 +16,8 @@ import lombok.experimental.FieldDefaults;
 @Getter
 public class KeyCloakError {
 
+    String error;
     String errorMessage;
+    String error_description;
 
 }

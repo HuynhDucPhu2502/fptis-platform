@@ -1,8 +1,8 @@
-package fpt.is.bnk.fptis_platform.configuration.auth;
+package fpt.is.bnk.fptis_platform.configuration.auth.entrypoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;
-import fpt.is.bnk.fptis_platform.exception.ErrorCode;
+import fpt.is.bnk.fptis_platform.advice.base.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

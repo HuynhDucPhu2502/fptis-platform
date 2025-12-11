@@ -1,5 +1,6 @@
-package fpt.is.bnk.fptis_platform.exception;
+package fpt.is.bnk.fptis_platform.advice.exception;
 
+import fpt.is.bnk.fptis_platform.advice.base.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

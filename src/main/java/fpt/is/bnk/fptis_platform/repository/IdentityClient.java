@@ -1,7 +1,7 @@
 package fpt.is.bnk.fptis_platform.repository;
 
 import fpt.is.bnk.fptis_platform.dto.identity.TokenExchangeResponse;
-import fpt.is.bnk.fptis_platform.dto.identity.UserCreationParam;
+import fpt.is.bnk.fptis_platform.dto.identity.internal.UserCreationParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

@@ -42,12 +42,13 @@ public class RemoteUserAppServiceImpl implements fpt.is.bnk.fptis_platform.servi
     @Override
     public boolean verifyPassword(String username, String rawPassword) {
         var user = userRepository.findByUsernameWithProfile(username).orElse(null);
-        if (user == null) {
-            System.out.println("null");
-            return false;
-        }
 
-        return passwordEncoder.matches(rawPassword, user.getPasswordHash());
+        if (user == null)
+            return false;
+
+        String combined = username.toLowerCase() + ":" + rawPassword;
+
+        return passwordEncoder.matches(combined, user.getPasswordHash());
     }
 
     private RemoteUser mapToRemoteUser(User user) {

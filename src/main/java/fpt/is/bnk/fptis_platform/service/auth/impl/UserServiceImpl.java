@@ -1,14 +1,16 @@
 package fpt.is.bnk.fptis_platform.service.auth.impl;
 
 import feign.FeignException;
+import fpt.is.bnk.fptis_platform.advice.base.ErrorCode;
+import fpt.is.bnk.fptis_platform.advice.exception.AppException;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 import fpt.is.bnk.fptis_platform.dto.identity.TokenExchangeResponse;
-import fpt.is.bnk.fptis_platform.dto.identity.UserCreationParam;
+import fpt.is.bnk.fptis_platform.dto.identity.internal.UserCreationParam;
 import fpt.is.bnk.fptis_platform.dto.request.authentication.LoginRequest;
 import fpt.is.bnk.fptis_platform.dto.request.authentication.RegistrationRequest;
 import fpt.is.bnk.fptis_platform.entity.Profile;
 import fpt.is.bnk.fptis_platform.entity.User;
-import fpt.is.bnk.fptis_platform.exception.ErrorNormalizer;
+import fpt.is.bnk.fptis_platform.advice.base.ErrorNormalizer;
 import fpt.is.bnk.fptis_platform.mapper.UserMapper;
 import fpt.is.bnk.fptis_platform.repository.IdentityClient;
 import fpt.is.bnk.fptis_platform.repository.ProfileRepository;
@@ -86,20 +88,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Map<String, ? extends Serializable> login(LoginRequest request) {
-        var token = exchangeToken(Map.of(
-                "grant_type", "password",
-                "client_id", clientId,
-                "client_secret", clientSecert,
-                "username", request.getUsername(),
-                "password", request.getPassword(),
-                "scope", "openid"
-        ));
+        try {
+            var token = exchangeToken(Map.of(
+                    "grant_type", "password",
+                    "client_id", clientId,
+                    "client_secret", clientSecert,
+                    "username", request.getUsername(),
+                    "password", request.getPassword(),
+                    "scope", "openid"
+            ));
 
-        return Map.of(
-                "accessToken", token.getAccessToken(),
-                "refreshToken", token.getRefreshToken(),
-                "refreshExpiresIn", token.getRefreshExpiresIn()
-        );
+            return Map.of(
+                    "accessToken", token.getAccessToken(),
+                    "refreshToken", token.getRefreshToken(),
+                    "refreshExpiresIn", token.getRefreshExpiresIn()
+            );
+        } catch (FeignException e) {
+            if (e.status() == 401) {
+                throw new AppException(ErrorCode.INVALID_CREDENTIALS);
+            }
+            
+            throw errorNormalizer.handleKeyCloakException(e);
+        }
     }
 
     @Override
@@ -125,12 +135,13 @@ public class UserServiceImpl implements UserService {
     public RemoteUser register(RegistrationRequest request) {
 
         String normalizedUsername = request.getUsername().toLowerCase();
+        String combined = normalizedUsername + ":" + request.getPassword();
 
         // Tạo User
         User user = new User();
         user.setUsername(normalizedUsername);
         user.setEmail(request.getEmail());
-        user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setPasswordHash(passwordEncoder.encode(combined));
         user = userRepository.save(user);
 
         // Tạo Profile
@@ -163,7 +174,7 @@ public class UserServiceImpl implements UserService {
                             .build()
             );
         } catch (FeignException e) {
-            errorNormalizer.handleKeyCloakException(e);
+            throw errorNormalizer.handleKeyCloakException(e);
         }
 
         return userMapper.toRemoteUser(user, profile);
@@ -174,9 +185,7 @@ public class UserServiceImpl implements UserService {
     // Utility Functions
     // ====================================================================================
     private TokenExchangeResponse exchangeToken(Map<String, String> form) {
-        var res = identityClient.exchangeToken(form);
-
-        return res;
+        return identityClient.exchangeToken(form);
     }
 
 

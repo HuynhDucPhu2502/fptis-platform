@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.configuration.auth;
+package fpt.is.bnk.fptis_platform.configuration.auth.filter;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,9 +1,7 @@
-package fpt.is.bnk.fptis_platform.dto.identity;
+package fpt.is.bnk.fptis_platform.dto.identity.internal;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 /**
  * Admin 11/25/2025
