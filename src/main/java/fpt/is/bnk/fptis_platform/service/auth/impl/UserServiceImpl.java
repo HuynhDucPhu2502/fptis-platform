@@ -15,6 +15,7 @@ import fpt.is.bnk.fptis_platform.mapper.UserMapper;
 import fpt.is.bnk.fptis_platform.repository.IdentityClient;
 import fpt.is.bnk.fptis_platform.repository.ProfileRepository;
 import fpt.is.bnk.fptis_platform.repository.UserRepository;
+import fpt.is.bnk.fptis_platform.service.auth.JwtService;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import fpt.is.bnk.fptis_platform.service.auth.UserService;
 import lombok.AccessLevel;
@@ -31,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Admin 11/25/2025
@@ -50,16 +52,26 @@ public class UserServiceImpl implements UserService {
     ProfileRepository profileRepository;
     UserRepository userRepository;
 
+    // Service
+    JwtService jwtService;
+
     // Mapper
     UserMapper userMapper;
 
     // Keycloak
     IdentityClient identityClient;
-    ErrorNormalizer errorNormalizer;
 
     // Util
     PasswordEncoder passwordEncoder;
+    ErrorNormalizer errorNormalizer;
 
+    @Value("${app.jwt.access-token-expiration}")
+    @NonFinal
+    Long accessTokenExpiration;
+
+    @Value("${app.jwt.refresh-token-expiration}")
+    @NonFinal
+    Long refreshTokenExpiration;
 
     @Value("${idp.client-id}")
     @NonFinal
@@ -67,11 +79,14 @@ public class UserServiceImpl implements UserService {
 
     @Value("${idp.client_secret}")
     @NonFinal
-    String clientSecert;
+    String clientSecret;
 
     @Value("${remote-federation.link}")
     @NonFinal
     String federationLink;
+
+    static Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+
 
     @Override
     public RemoteUser getCurrentUserProfile() {
@@ -89,47 +104,45 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, ? extends Serializable> login(LoginRequest request) {
         try {
-            var token = exchangeToken(Map.of(
+            exchangeToken(Map.of(
                     "grant_type", "password",
                     "client_id", clientId,
-                    "client_secret", clientSecert,
+                    "client_secret", clientSecret,
                     "username", request.getUsername(),
                     "password", request.getPassword(),
                     "scope", "openid"
             ));
 
-            return Map.of(
-                    "accessToken", token.getAccessToken(),
-                    "refreshToken", token.getRefreshToken(),
-                    "refreshExpiresIn", token.getRefreshExpiresIn()
-            );
+            boolean isEmail = EMAIL_PATTERN.matcher(request.getUsername()).matches();
+
+            var user = isEmail
+                    ? userRepository.findByEmailWithProfile(request.getUsername())
+                    .orElseThrow(() -> new AppException(ErrorCode.USERNAME_IS_MISSING))
+                    : userRepository.findByUsernameWithProfile(request.getUsername())
+                    .orElseThrow(() -> new AppException(ErrorCode.USERNAME_IS_MISSING));
+
+            return generateToken(user);
+
         } catch (FeignException e) {
             if (e.status() == 401) {
                 throw new AppException(ErrorCode.INVALID_CREDENTIALS);
             }
-            
+
             throw errorNormalizer.handleKeyCloakException(e);
         }
     }
 
     @Override
     public Map<String, ? extends Serializable> refresh(String refreshToken) {
+        var jwt = jwtService.decodeJwt(refreshToken);
 
-        var token = exchangeToken(Map.of(
-                "grant_type", "refresh_token",
-                "client_id", clientId,
-                "client_secret", clientSecert,
-                "refresh_token", refreshToken,
-                "scope", "openid"
-        ));
+        String email = jwt.getSubject();
 
-        return Map.of(
-                "accessToken", token.getAccessToken(),
-                "refreshToken", token.getRefreshToken(),
-                "refreshExpiresIn", token.getRefreshExpiresIn()
-        );
+        var user = userRepository.findByEmailWithProfile(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USERNAME_IS_MISSING));
+
+        return generateToken(user);
     }
-
 
     @Override
     public RemoteUser register(RegistrationRequest request) {
@@ -156,7 +169,7 @@ public class UserServiceImpl implements UserService {
         var token = exchangeToken(Map.of(
                 "grant_type", "client_credentials",
                 "client_id", clientId,
-                "client_secret", clientSecert
+                "client_secret", clientSecret
         ));
 
         // Tạo Metadata trong Keycloak
@@ -186,6 +199,26 @@ public class UserServiceImpl implements UserService {
     // ====================================================================================
     private TokenExchangeResponse exchangeToken(Map<String, String> form) {
         return identityClient.exchangeToken(form);
+    }
+
+    private Map<String, ? extends Serializable> generateToken(
+            User user
+    ) {
+        // ================================================
+        // HANDLE ACCESS TOKEN
+        // ================================================
+        var accessToken = jwtService.buildJwt(user, accessTokenExpiration);
+
+        // ================================================
+        // HANDLE REFRESH TOKEN
+        // ================================================
+        var refreshToken = jwtService.buildJwt(user, refreshTokenExpiration);
+
+        return Map.of(
+                "accessToken", accessToken,
+                "refreshToken", refreshToken,
+                "refreshExpiresIn", refreshTokenExpiration
+        );
     }
 
 
