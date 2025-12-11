@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.configuration.auth.encoder;
+package fpt.is.bnk.fptis_platform.configuration.security.encoder;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;

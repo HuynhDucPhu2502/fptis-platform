@@ -1,7 +1,7 @@
-package fpt.is.bnk.fptis_platform.configuration.auth.config;
+package fpt.is.bnk.fptis_platform.configuration.security.config;
 
-import fpt.is.bnk.fptis_platform.configuration.auth.entrypoint.CustomAuthenticationEntryPoint;
-import fpt.is.bnk.fptis_platform.configuration.auth.encoder.UsernameAwarePasswordEncoder;
+import fpt.is.bnk.fptis_platform.configuration.security.entrypoint.CustomAuthenticationEntryPoint;
+import fpt.is.bnk.fptis_platform.configuration.security.encoder.UsernameAwarePasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
