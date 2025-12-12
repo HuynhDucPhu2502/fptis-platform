@@ -1,7 +1,7 @@
 package fpt.is.bnk.fptis_platform.service.daily_log.impl;
 
 import fpt.is.bnk.fptis_platform.entity.DailyLog;
-import fpt.is.bnk.fptis_platform.entity.User;
+import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.repository.DailyLogRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import lombok.AccessLevel;

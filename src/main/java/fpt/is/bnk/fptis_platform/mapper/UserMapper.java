@@ -1,8 +1,8 @@
 package fpt.is.bnk.fptis_platform.mapper;
 
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
-import fpt.is.bnk.fptis_platform.entity.Profile;
-import fpt.is.bnk.fptis_platform.entity.User;
+import fpt.is.bnk.fptis_platform.entity.user.Profile;
+import fpt.is.bnk.fptis_platform.entity.user.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

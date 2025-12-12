@@ -1,11 +1,15 @@
-package fpt.is.bnk.fptis_platform.entity;
+package fpt.is.bnk.fptis_platform.entity.user;
 
+import fpt.is.bnk.fptis_platform.entity.BaseEntity;
+import fpt.is.bnk.fptis_platform.entity.authorization.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 /**
  * Admin 12/1/2025
@@ -36,4 +40,13 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     Profile profile;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    List<Role> roles;
+
 }

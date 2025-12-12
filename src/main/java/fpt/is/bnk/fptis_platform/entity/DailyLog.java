@@ -1,5 +1,6 @@
 package fpt.is.bnk.fptis_platform.entity;
 
+import fpt.is.bnk.fptis_platform.entity.user.Profile;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package fpt.is.bnk.fptis_platform.service.auth;
 
-import fpt.is.bnk.fptis_platform.entity.User;
+import fpt.is.bnk.fptis_platform.entity.user.User;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 /**

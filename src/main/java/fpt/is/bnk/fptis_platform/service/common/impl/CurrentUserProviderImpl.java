@@ -1,13 +1,12 @@
 package fpt.is.bnk.fptis_platform.service.common.impl;
 
-import fpt.is.bnk.fptis_platform.entity.User;
+import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.repository.UserRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class CurrentUserProviderImpl implements CurrentUserProvider {
     public User getCurrentUser() {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String email = jwt.getClaimAsString("email");
-        
+
         var user = userRepository
                 .findUserByEmailIgnoreCase(email);
 
