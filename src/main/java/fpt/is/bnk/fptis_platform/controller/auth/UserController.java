@@ -106,18 +106,25 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
+    public ResponseEntity<Void> logout(
+            @RequestHeader(name = "Authorization", required = false) String authHeader
+    ) {
+        String token = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
+        }
+
+        userService.logout(token);
+
         var refreshTokenCookie = ResponseCookie
-                .from("refresh_token", "refreshToken")
+                .from("refresh_token", "")
                 .httpOnly(true)
                 .path("/")
-                .sameSite(sameSite)
-                .secure(secure)
                 .maxAge(0)
                 .build();
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
+        return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .build();
     }

@@ -27,7 +27,7 @@ public class CurrentUserProviderImpl implements CurrentUserProvider {
     @Override
     public User getCurrentUser() {
         Jwt jwt = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = jwt.getClaimAsString("email");
+        String email = jwt.getClaimAsString("sub");
 
         var user = userRepository
                 .findUserByEmailIgnoreCase(email);

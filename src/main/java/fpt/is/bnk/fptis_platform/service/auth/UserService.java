@@ -20,6 +20,8 @@ public interface UserService {
 
     Map<String, ? extends Serializable> login(LoginRequest request);
 
+    void logout(String accessToken);
+
     Map<String, ? extends Serializable> refresh(String refreshToken);
 
     RemoteUser register(RegistrationRequest request);
