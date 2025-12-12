@@ -4,6 +4,7 @@ import fpt.is.bnk.fptis_platform.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
@@ -11,6 +12,7 @@ import java.util.Optional;
  * Admin 12/1/2025
  *
  **/
+@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("""

@@ -1,6 +1,7 @@
 package fpt.is.bnk.fptis_platform.service.auth.impl;
 
 import fpt.is.bnk.fptis_platform.configuration.security.config.AuthConfiguration;
+import fpt.is.bnk.fptis_platform.entity.authorization.Role;
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.mapper.UserMapper;
 import lombok.AccessLevel;
@@ -49,6 +50,7 @@ public class JwtServiceImpl implements fpt.is.bnk.fptis_platform.service.auth.Jw
                 .expiresAt(validity)
                 .subject(user.getEmail())
                 .claim("user", userMapper.toRemoteUser(user, user.getProfile()))
+                .claim("roles", user.getRoles().stream().map(Role::getName).toList())
                 .build();
 
         // Cuối cùng, encode JWT và lấy ra chuỗi token trả về

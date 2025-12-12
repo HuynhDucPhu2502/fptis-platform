@@ -1,40 +1,26 @@
 package fpt.is.bnk.fptis_platform.entity.authorization;
 
-import fpt.is.bnk.fptis_platform.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.util.Set;
 
-/**
- * Admin 12/11/2025
- *
- **/
 @Entity
-@Table(name = "permissions")
+@Table(name = "permissions",
+        uniqueConstraints = @UniqueConstraint(name = "uk_permission_name", columnNames = "name"))
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Permission extends BaseEntity {
+public class Permission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(unique = true, nullable = false, length = 100)
     String name;
 
-    String description;
-
-    @OneToMany(mappedBy = "permission", fetch = FetchType.LAZY)
-    List<RolePermission> rolePermissions;
-
-    @OneToMany(mappedBy = "permission", fetch = FetchType.LAZY)
-    List<ApiPermission> apiPermissions;
+    @ManyToMany(mappedBy = "permissions")
+    Set<Role> roles;
 }
-
