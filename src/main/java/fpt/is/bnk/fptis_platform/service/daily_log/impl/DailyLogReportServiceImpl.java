@@ -1,6 +1,6 @@
 package fpt.is.bnk.fptis_platform.service.daily_log.impl;
 
-import fpt.is.bnk.fptis_platform.entity.DailyLog;
+import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.repository.DailyLogRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
@@ -16,10 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,27 +42,32 @@ public class DailyLogReportServiceImpl implements fpt.is.bnk.fptis_platform.serv
                 .getInputStream();
         JasperReport jasperReport = JasperCompileManager.compileReport(jrxmlStream);
 
-
-        // Đẩy dữ liệu vào Param template
+        // ===========================================================================
+        // Tạo tham số cho báo cáo
         Map<String, Object> params = new HashMap<>();
+
+        // Tham số: LOGO
         InputStream logoStream = resourceLoader
                 .getResource("classpath:reports/fpt-is-logo.png")
                 .getInputStream();
         params.put("LOGO", logoStream);
 
+        // Tham số: USERNAME
+        params.put("USERNAME", user.getUsername());
+
+        // Tham số: CURRENT_DATE
+        String currentDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());  // Định dạng ngày hiện tại
+        params.put("CURRENT_DATE", currentDate);
+        // ===========================================================================
+
 
         params.put(JRParameter.REPORT_LOCALE, new Locale("vi", "VN"));
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, dataSource);
 
-        // Làm ra report
-        JasperPrint jasperPrint =
-                JasperFillManager.fillReport(jasperReport, params, dataSource);
-
-        // Convert dữ liệu thành byte
         byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "inline; filename=daily-log-report.pdf")
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=daily-log-report.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
     }

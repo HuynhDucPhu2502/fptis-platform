@@ -1,7 +1,7 @@
 package fpt.is.bnk.fptis_platform.entity.user;
 
 import fpt.is.bnk.fptis_platform.entity.BaseEntity;
-import fpt.is.bnk.fptis_platform.entity.DailyLog;
+import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

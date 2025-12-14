@@ -28,7 +28,7 @@ public class DailyLogController {
 
     DailyLogService dailyLogService;
 
-    @PreAuthorize("hasRole('INTERN_LOG_READ')")
+    @PreAuthorize("hasAuthority('INTERN_LOG_READ')")
     @GetMapping
     public ApiResponse<PageResponse<DailyLogResponse>> getCurrentUserDailyLogs(
             @PageableDefault Pageable pageable
@@ -41,7 +41,7 @@ public class DailyLogController {
                 .build();
     }
 
-    @PreAuthorize("hasRole('INTERN_LOG_READ')")
+    @PreAuthorize("hasAuthority('INTERN_LOG_READ')")
     @GetMapping("/{id}")
     public ApiResponse<DailyLogResponse> getDailyLogById(@PathVariable Long id) {
         return ApiResponse.<DailyLogResponse>builder()
@@ -49,7 +49,7 @@ public class DailyLogController {
                 .build();
     }
 
-    @PreAuthorize("hasRole('INTERN_LOG_CREATE')")
+    @PreAuthorize("hasAuthority('INTERN_LOG_CREATE')")
     @PostMapping
     public ApiResponse<DailyLogResponse> createDailyLog(
             @Valid @RequestBody CreateDailyLogRequest request
@@ -59,7 +59,7 @@ public class DailyLogController {
                 .build();
     }
 
-    @PreAuthorize("hasRole('INTERN_LOG_UPDATE')")
+    @PreAuthorize("hasAuthority('INTERN_LOG_UPDATE')")
     @PutMapping("/{id}")
     public ApiResponse<DailyLogResponse> updateDailyLog(
             @PathVariable Long id,
@@ -70,7 +70,7 @@ public class DailyLogController {
                 .build();
     }
 
-    @PreAuthorize("hasRole('INTERN_LOG_DELETE')")
+    @PreAuthorize("hasAuthority('INTERN_LOG_DELETE')")
     @DeleteMapping("/{id}")
     public ApiResponse<Void> deleteDailyLog(@PathVariable Long id) {
         dailyLogService.deleteDailyLog(id);

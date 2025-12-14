@@ -1,6 +1,6 @@
 package fpt.is.bnk.fptis_platform.repository;
 
-import fpt.is.bnk.fptis_platform.entity.DailyLog;
+import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

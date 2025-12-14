@@ -9,6 +9,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
@@ -49,7 +50,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain appSecurityFilterChain(
             HttpSecurity http,
             CustomAuthenticationEntryPoint customAuthenticationEntryPoint,
-            SkipPathBearerTokenResolver skipPathBearerTokenResolver
+            SkipPathBearerTokenResolver skipPathBearerTokenResolver,
+            JwtAuthenticationConverter jwtAuthenticationConverter
     ) throws Exception {
 
         http
@@ -69,7 +71,9 @@ public class SecurityConfiguration {
                 )
                 // ==========================================================================================
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults())
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter)
+                        )
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .bearerTokenResolver(skipPathBearerTokenResolver)
                 );

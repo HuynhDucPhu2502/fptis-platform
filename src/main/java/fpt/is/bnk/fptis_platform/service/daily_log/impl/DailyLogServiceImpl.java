@@ -3,7 +3,7 @@ package fpt.is.bnk.fptis_platform.service.daily_log.impl;
 import fpt.is.bnk.fptis_platform.dto.request.daily_log.CreateDailyLogRequest;
 import fpt.is.bnk.fptis_platform.dto.request.daily_log.UpdateDailyLogRequest;
 import fpt.is.bnk.fptis_platform.dto.response.daily_log.DailyLogResponse;
-import fpt.is.bnk.fptis_platform.entity.DailyLog;
+import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import fpt.is.bnk.fptis_platform.mapper.DailyLogMapper;
 import fpt.is.bnk.fptis_platform.repository.DailyLogRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;

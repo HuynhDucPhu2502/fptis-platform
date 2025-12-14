@@ -17,7 +17,7 @@ public class DailyLogReportController {
 
     private final DailyLogReportServiceImpl reportService;
 
-    @GetMapping("/api/reports/daily-logs")
+    @GetMapping("/api/daily-logs/report")
     public ResponseEntity<byte[]> exportDailyLog() throws Exception {
         return reportService.generateReport();
     }
