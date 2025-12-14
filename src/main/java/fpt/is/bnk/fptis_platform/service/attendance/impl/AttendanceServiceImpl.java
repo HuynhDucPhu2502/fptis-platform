@@ -1,5 +1,7 @@
 package fpt.is.bnk.fptis_platform.service.attendance.impl;
 
+import fpt.is.bnk.fptis_platform.advice.base.ErrorCode;
+import fpt.is.bnk.fptis_platform.advice.exception.AppException;
 import fpt.is.bnk.fptis_platform.dto.response.attendance.AttendanceResponse;
 import fpt.is.bnk.fptis_platform.entity.attendance.Attendance;
 import fpt.is.bnk.fptis_platform.mapper.AttendanceMapper;
@@ -46,7 +48,7 @@ public class AttendanceServiceImpl implements fpt.is.bnk.fptis_platform.service.
                 .findByUserIdAndDate(user.getId(), LocalDate.now());
 
         if (existingAttendance.isPresent())
-            throw new IllegalArgumentException("Bạn đã điểm danh hôm nay");
+            throw new AppException(ErrorCode.ATTENDANCE_ALREADY_CHECKED_IN);
 
 
         Attendance attendance = new Attendance();
@@ -68,13 +70,19 @@ public class AttendanceServiceImpl implements fpt.is.bnk.fptis_platform.service.
                 .findByUserIdAndDate(user.getId(), LocalDate.now());
 
         if (attendanceOpt.isPresent()) {
+
             Attendance attendance = attendanceOpt.get();
+
+            if (attendance.getCheckOutStatus() != null)
+                throw new AppException(ErrorCode.ATTENDANCE_ALREADY_CHECKED_OUT);
+
             attendance.checkOut(scheduledTimeOut);
 
             var savedAttendance = attendanceRepository.save(attendance);
             return attendanceMapper.toAttendanceResponse(savedAttendance);
+
         } else
-            throw new IllegalArgumentException("Không có điểm danh cho ngày hôm nay để check-out.");
+            throw new AppException(ErrorCode.ATTENDANCE_NOT_FOUND);
     }
 
 

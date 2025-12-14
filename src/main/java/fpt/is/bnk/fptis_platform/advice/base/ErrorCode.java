@@ -21,6 +21,9 @@ public enum ErrorCode {
     USERNAME_IS_MISSING(1011, "Vui lòng nhập tên đăng nhập", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(1012, "Token không hợp lệ hoặc đã hết hạn", HttpStatus.UNAUTHORIZED),
     INVALID_CREDENTIALS(1013, "Tên đăng nhập hoặc mật khẩu không đúng", HttpStatus.UNAUTHORIZED),
+    ATTENDANCE_ALREADY_CHECKED_IN(2001, "Bạn đã điểm danh hôm nay", HttpStatus.BAD_REQUEST),
+    ATTENDANCE_NOT_FOUND(2002, "Không có điểm danh cho ngày hôm nay", HttpStatus.BAD_REQUEST),
+    ATTENDANCE_ALREADY_CHECKED_OUT(2003, "Bạn đã check-out hôm nay", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

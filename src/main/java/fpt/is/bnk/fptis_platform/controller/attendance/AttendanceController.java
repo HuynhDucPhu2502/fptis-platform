@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  *
  **/
 @RestController
-@RequestMapping("/api/attendance")
+@RequestMapping("/api/attendances")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AttendanceController {
