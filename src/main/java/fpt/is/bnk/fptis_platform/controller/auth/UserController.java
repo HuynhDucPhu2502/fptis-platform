@@ -51,7 +51,7 @@ public class UserController {
                 .build();
     }
 
-    @PreAuthorize("hasRole('USERS_VIEW')")
+    @PreAuthorize("hasAuthority('USERS_VIEW')")
     @GetMapping
     public ApiResponse<PageResponse<RemoteUser>> getAllUser(@PageableDefault Pageable pageable) {
         PageResponse<RemoteUser> res = new PageResponse<>(userService.getAllUsers(pageable));

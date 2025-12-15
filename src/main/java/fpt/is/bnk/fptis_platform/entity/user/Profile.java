@@ -3,10 +3,7 @@ package fpt.is.bnk.fptis_platform.entity.user;
 import fpt.is.bnk.fptis_platform.entity.BaseEntity;
 import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
@@ -29,6 +26,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Profile extends BaseEntity {
 
@@ -40,8 +38,9 @@ public class Profile extends BaseEntity {
     String lastName;
     LocalDate dob;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @ToString.Exclude
     User user;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.REMOVE, orphanRemoval = true)

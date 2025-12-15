@@ -3,10 +3,7 @@ package fpt.is.bnk.fptis_platform.entity.user;
 import fpt.is.bnk.fptis_platform.entity.BaseEntity;
 import fpt.is.bnk.fptis_platform.entity.authorization.Role;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
@@ -39,6 +36,7 @@ public class User extends BaseEntity {
     String passwordHash;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @ToString.Exclude
     Profile profile;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -47,6 +45,7 @@ public class User extends BaseEntity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
+    @ToString.Exclude
     Set<Role> roles;
 
 
