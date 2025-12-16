@@ -1,5 +1,6 @@
 package fpt.is.bnk.fptis_platform.service.daily_log.impl;
 
+import fpt.is.bnk.fptis_platform.dto.report.daily_log.DailyLogReportObject;
 import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.repository.DailyLogRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -34,7 +36,21 @@ public class DailyLogReportServiceImpl implements fpt.is.bnk.fptis_platform.serv
         // Lấy dữ liệu
         List<DailyLog> data = dailyLogRepository
                 .findByProfile_ProfileId(user.getProfile().getProfileId());
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(data);
+
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+        List<DailyLogReportObject> reportData = data.stream()
+                .map(dl -> new DailyLogReportObject(
+                        dl.getId(),
+                        dl.getMainTask(),
+                        dl.getResult(),
+                        dl.getWorkDate() != null ? dl.getWorkDate().format(fmt) : ""
+                ))
+                .toList();
+
+        JRBeanCollectionDataSource dataSource =
+                new JRBeanCollectionDataSource(reportData);
+
 
         // Lấy template
         InputStream jrxmlStream = resourceLoader

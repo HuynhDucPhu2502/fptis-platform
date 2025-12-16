@@ -3,6 +3,7 @@ package fpt.is.bnk.fptis_platform.service.attendance.impl;
 import fpt.is.bnk.fptis_platform.dto.report.attendance.AttendanceReportObject;
 import fpt.is.bnk.fptis_platform.dto.report.attendance.StatusCountReportObject;
 import fpt.is.bnk.fptis_platform.entity.attendance.Attendance;
+import fpt.is.bnk.fptis_platform.entity.attendance.AttendanceStatus;
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.repository.AttendanceRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -38,15 +40,23 @@ public class AttendanceReportServiceImpl implements fpt.is.bnk.fptis_platform.se
         User user = currentUserProvider.getCurrentUser();
 
         List<Attendance> data = attendanceRepository.findByUserId(user.getId());
-        List<AttendanceReportObject> reportData = data.stream().map(attendance -> {
-            AttendanceReportObject dto = new AttendanceReportObject();
-            dto.setDate(attendance.getDate());
-            dto.setTimeIn(attendance.getTimeIn());
-            dto.setCheckInStatus(attendance.getCheckInStatus().toString());
-            dto.setTimeOut(attendance.getTimeOut());
-            dto.setCheckOutStatus(attendance.getCheckOutStatus().toString());
-            return dto;
-        }).collect(Collectors.toList());
+        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
+
+        List<AttendanceReportObject> reportData = data.stream()
+                .map(attendance -> new AttendanceReportObject(
+                        attendance.getDate() != null
+                                ? attendance.getDate().format(dateFmt) : "",
+                        attendance.getTimeIn() != null
+                                ? attendance.getTimeIn().format(timeFmt) : "",
+                        attendance.getCheckInStatus() != null
+                                ? attendance.getCheckInStatus().toString() : "",
+                        attendance.getTimeOut() != null
+                                ? attendance.getTimeOut().format(timeFmt) : "",
+                        attendance.getCheckOutStatus() != null
+                                ? attendance.getCheckOutStatus().toString() : ""
+                ))
+                .toList();
 
         JRDataSource dataSource = new JRBeanCollectionDataSource(reportData);
 
@@ -86,7 +96,15 @@ public class AttendanceReportServiceImpl implements fpt.is.bnk.fptis_platform.se
 
     private List<StatusCountReportObject> transformToStatusCountDTO(List<Object[]> statusCount) {
         return statusCount.stream()
-                .map(obj -> new StatusCountReportObject((String) obj[0], ((Number) obj[1]).longValue()))
+                .map(obj -> {
+                    AttendanceStatus statusEnum =
+                            AttendanceStatus.valueOf((String) obj[0]);
+                    return new StatusCountReportObject(
+                            statusEnum.toString(),
+                            ((Number) obj[1]).longValue()
+                    );
+                })
                 .toList();
     }
+
 }

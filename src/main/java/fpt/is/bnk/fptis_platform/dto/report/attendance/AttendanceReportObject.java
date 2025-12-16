@@ -19,9 +19,10 @@ import java.time.LocalTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AttendanceReportObject {
 
-    LocalDate date;
-    LocalTime timeIn;
+    String date;
+    String timeIn;
     String checkInStatus;
-    LocalTime timeOut;
+    String timeOut;
     String checkOutStatus;
+    
 }
