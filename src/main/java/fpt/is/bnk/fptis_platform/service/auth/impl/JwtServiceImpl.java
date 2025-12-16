@@ -25,8 +25,6 @@ public class JwtServiceImpl implements fpt.is.bnk.fptis_platform.service.auth.Jw
     JwtEncoder jwtEncoder;
     JwtDecoder jwtDecoder;
 
-    UserMapper userMapper;
-
     @Override
     public String buildJwt(User user, Long expirationRate) {
         // Lấy thời điểm hiện tại
@@ -43,13 +41,11 @@ public class JwtServiceImpl implements fpt.is.bnk.fptis_platform.service.auth.Jw
         // + issuedAt: thời điểm token được tạo ra
         // + expiresAt: thời điểm token hết hạn
         // + subject: email của người dùng (được dùng làm định danh chính)
-        // + claim "user": thông tin cơ bản của người dùng, được map sang DTO UserSessionResponse
         // + claim "role": tên chức vụ của người dùng
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
                 .subject(user.getEmail())
-                .claim("user", userMapper.toRemoteUser(user, user.getProfile()))
                 .claim("roles", user.getRoles().stream().map(Role::getName).toList())
                 .build();
 

@@ -26,36 +26,44 @@ public class ErrorNormalizer {
     ObjectMapper objectMapper;
     Map<String, ErrorCode> errorCodeMap;
 
-    public ErrorNormalizer() {
-        objectMapper = new ObjectMapper();
-        errorCodeMap = new HashMap<>();
+    public ErrorNormalizer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+        this.errorCodeMap = initErrorCodeMap();
+    }
 
-        errorCodeMap.put("User exists with same username", ErrorCode.USER_EXISTED);
-        errorCodeMap.put("User exists with same email", ErrorCode.EMAIL_EXISTED);
-        errorCodeMap.put("User name is missing", ErrorCode.USERNAME_IS_MISSING);
-        errorCodeMap.put("Invalid user credentials", ErrorCode.INVALID_CREDENTIALS);
+    private Map<String, ErrorCode> initErrorCodeMap() {
+        Map<String, ErrorCode> map = new HashMap<>();
+        map.put("User exists with same username", ErrorCode.USER_EXISTED);
+        map.put("User exists with same email", ErrorCode.EMAIL_EXISTED);
+        map.put("User name is missing", ErrorCode.USERNAME_IS_MISSING);
+        map.put("Invalid user credentials", ErrorCode.INVALID_CREDENTIALS);
+        return map;
     }
 
     public AppException handleKeyCloakException(FeignException exception) {
         try {
-            var response = objectMapper.readValue(exception.contentUTF8(), KeyCloakError.class);
-            System.out.println(response);
+            KeyCloakError response =
+                    objectMapper.readValue(exception.contentUTF8(), KeyCloakError.class);
 
-            String msg = response.getErrorMessage();
-            if (msg == null) msg = response.getError_description();
-            if (msg == null) msg = response.getError();
+            String message = extractMessage(response);
+            log.warn("Keycloak error message: {}", message);
 
-            System.out.println(msg);
-
-            ErrorCode mapped = errorCodeMap.get(msg);
+            ErrorCode mapped = errorCodeMap.get(message);
             if (mapped != null) {
-                throw new AppException(mapped);
+                return new AppException(mapped);
             }
 
-        } catch (JsonProcessingException ignored) {
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse Keycloak error response", e);
         }
 
-        throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        return new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
     }
 
+    private String extractMessage(KeyCloakError error) {
+        if (error == null) return null;
+        if (error.getErrorMessage() != null) return error.getErrorMessage();
+        if (error.getError_description() != null) return error.getError_description();
+        return error.getError();
+    }
 }
