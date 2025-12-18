@@ -1,7 +1,5 @@
 package fpt.is.bnk.fptis_platform.configuration.security.config;
 
-import fpt.is.bnk.fptis_platform.advice.base.ErrorCode;
-import fpt.is.bnk.fptis_platform.advice.exception.AppException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -10,6 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
 import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 
 import java.util.List;
 
@@ -19,20 +18,21 @@ import java.util.List;
  **/
 @Component
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class SkipPathBearerTokenResolver implements BearerTokenResolver {
+public class CustomBearerTokenResolver implements BearerTokenResolver {
 
     BearerTokenResolver delegate = new DefaultBearerTokenResolver();
+    AntPathMatcher pathMatcher = new AntPathMatcher();
 
     List<String> skipPaths = List.of(
             "/api/users/login",
             "/api/users/register",
             "/api/users/refresh",
-            "/actuator/health"
+            "/actuator/health/**"
     );
 
     RedisTemplate<String, String> redis;
 
-    public SkipPathBearerTokenResolver(
+    public CustomBearerTokenResolver(
             @Qualifier("redisStringTemplate") RedisTemplate<String, String> redis
     ) {
         this.redis = redis;
@@ -42,19 +42,15 @@ public class SkipPathBearerTokenResolver implements BearerTokenResolver {
     public String resolve(HttpServletRequest request) {
         String path = request.getRequestURI();
 
-        for (String skip : skipPaths) {
-            if (path.contains(skip)) {
-                return null;
-            }
-        }
+        if (skipPaths.stream().anyMatch(pattern -> pathMatcher.match(pattern, path)))
+            return null;
+
 
         String token = delegate.resolve(request);
         if (token == null) return null;
 
-        String isBlacklisted = redis.opsForValue().get("ACCESS_BLACKLIST:" + token);
-        if (isBlacklisted != null) {
-            throw new AppException(ErrorCode.INVALID_TOKEN);
-        }
+        if (Boolean.TRUE.equals(redis.hasKey("ACCESS_BLACKLIST:" + token)))
+            return null;
 
         return token;
     }

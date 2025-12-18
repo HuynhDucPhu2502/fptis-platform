@@ -2,16 +2,14 @@ package fpt.is.bnk.fptis_platform.configuration.security.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
-import fpt.is.bnk.fptis_platform.configuration.security.encoder.UsernameAwarePasswordEncoder;
 import fpt.is.bnk.fptis_platform.repository.PermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -41,13 +39,6 @@ public class AuthConfiguration {
     private final PermissionRepository permissionRepository;
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration authenticationConfiguration
-    ) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
     public JwtEncoder jwtEncoder() {
         return new NimbusJwtEncoder(new ImmutableSecret<>(getSecretKey()));
     }
@@ -62,7 +53,7 @@ public class AuthConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new UsernameAwarePasswordEncoder();
+        return new BCryptPasswordEncoder();
     }
 
     @Bean

@@ -27,6 +27,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +50,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     JwtService jwtService;
+
     UserMapper userMapper;
 
     IdentityClient identityClient;
@@ -55,6 +59,7 @@ public class UserServiceImpl implements UserService {
 
     PasswordEncoder passwordEncoder;
     ErrorNormalizer errorNormalizer;
+
 
     public UserServiceImpl(
             CurrentUserProvider currentUserProvider, ProfileRepository profileRepository,
@@ -119,7 +124,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, ? extends Serializable> login(LoginRequest request) {
         try {
-            // Verify remote Keycloak
             exchangeToken(Map.of(
                     "grant_type", "password",
                     "client_id", clientId,
@@ -129,12 +133,14 @@ public class UserServiceImpl implements UserService {
                     "scope", "openid"
             ));
 
-            boolean isEmail = EMAIL_PATTERN.matcher(request.getUsername()).matches();
+
+            String username = request.getUsername();
+            boolean isEmail = EMAIL_PATTERN.matcher(username).matches();
 
             var user = isEmail
-                    ? userRepository.findByEmailWithProfile(request.getUsername())
+                    ? userRepository.findByEmailWithProfile(username)
                     .orElseThrow(() -> new AppException(ErrorCode.USERNAME_IS_MISSING))
-                    : userRepository.findByUsernameWithProfile(request.getUsername())
+                    : userRepository.findByUsernameWithProfile(username)
                     .orElseThrow(() -> new AppException(ErrorCode.USERNAME_IS_MISSING));
 
             return generateToken(user);
@@ -255,10 +261,7 @@ public class UserServiceImpl implements UserService {
 
         String sessionKey = "USER_SESSION:" + user.getId();
 
-        // Lấy access token cũ
         String oldAccess = (String) redis.opsForHash().get(sessionKey, "accessToken");
-
-        // BLACKLIST ACCESS TOKEN CŨ (nếu có)
         if (oldAccess != null) {
             redis.opsForValue().set(
                     "ACCESS_BLACKLIST:" + oldAccess,
@@ -267,11 +270,9 @@ public class UserServiceImpl implements UserService {
             );
         }
 
-        // Ghi session mới: refresh + access
         redis.opsForHash().put(sessionKey, "refreshToken", newRefresh);
         redis.opsForHash().put(sessionKey, "accessToken", newAccess);
 
-        // Set TTL = refreshTokenExpiration
         redis.expire(sessionKey, Duration.ofSeconds(refreshTokenExpiration));
 
         return Map.of(
