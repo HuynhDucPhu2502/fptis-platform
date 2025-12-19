@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +38,7 @@ public class AttendanceReportServiceImpl implements fpt.is.bnk.fptis_platform.se
     public ResponseEntity<byte[]> generateReport() throws Exception {
         User user = currentUserProvider.getCurrentUser();
 
-        List<Attendance> data = attendanceRepository.findByUserId(user.getId());
+        List<Attendance> data = attendanceRepository.findByProfileProfileId(user.getProfile().getProfileId());
         DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
 

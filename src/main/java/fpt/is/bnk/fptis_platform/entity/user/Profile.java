@@ -1,6 +1,7 @@
 package fpt.is.bnk.fptis_platform.entity.user;
 
 import fpt.is.bnk.fptis_platform.entity.BaseEntity;
+import fpt.is.bnk.fptis_platform.entity.attendance.Attendance;
 import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,5 +46,8 @@ public class Profile extends BaseEntity {
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.REMOVE, orphanRemoval = true)
     List<DailyLog> dailyLogs;
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    List<Attendance> attendances;
 
 }

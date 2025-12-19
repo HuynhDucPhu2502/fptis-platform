@@ -17,7 +17,7 @@ import java.time.LocalTime;
 public class AttendanceResponse {
 
     private Long id;
-    private Long userId;
+    private Long profileId;
     private LocalDate date;
     private LocalTime timeIn;
     private LocalTime timeOut;

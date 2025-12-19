@@ -12,22 +12,22 @@ import java.util.Optional;
 
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
-    Optional<Attendance> findByUserIdAndDate(Long userId, LocalDate date);
+    Optional<Attendance> findByProfileProfileIdAndDate(Long profileId, LocalDate date);
+    
+    Page<Attendance> findByProfileProfileId(Long profileId, Pageable pageable);
 
-    Page<Attendance> findByUserId(Long userId, Pageable pageable);
-
-    List<Attendance> findByUserId(Long userId);
+    List<Attendance> findByProfileProfileId(Long profileId);
 
     @Query("SELECT 'CHECKED_IN_ON_TIME' AS status, COUNT(a) AS count " +
-            "FROM Attendance a WHERE a.user.id = :userId AND a.checkInStatus = 'CHECKED_IN_ON_TIME' " +
+            "FROM Attendance a WHERE a.profile.profileId = :profileId AND a.checkInStatus = 'CHECKED_IN_ON_TIME' " +
             "UNION ALL " +
             "SELECT 'CHECKED_IN_LATE' AS status, COUNT(a) AS count " +
-            "FROM Attendance a WHERE a.user.id = :userId AND a.checkInStatus = 'CHECKED_IN_LATE' " +
+            "FROM Attendance a WHERE a.profile.profileId = :profileId AND a.checkInStatus = 'CHECKED_IN_LATE' " +
             "UNION ALL " +
             "SELECT 'CHECKED_OUT_ON_TIME' AS status, COUNT(a) AS count " +
-            "FROM Attendance a WHERE a.user.id = :userId AND a.checkOutStatus = 'CHECKED_OUT_ON_TIME' " +
+            "FROM Attendance a WHERE a.profile.profileId = :profileId AND a.checkOutStatus = 'CHECKED_OUT_ON_TIME' " +
             "UNION ALL " +
             "SELECT 'CHECKED_OUT_EARLY' AS status, COUNT(a) AS count " +
-            "FROM Attendance a WHERE a.user.id = :userId AND a.checkOutStatus = 'CHECKED_OUT_EARLY'")
-    List<Object[]> countStatusByUserId(Long userId);
+            "FROM Attendance a WHERE a.profile.profileId = :profileId AND a.checkOutStatus = 'CHECKED_OUT_EARLY'")
+    List<Object[]> countStatusByUserId(Long profileId);
 }

@@ -45,14 +45,14 @@ public class AttendanceServiceImpl implements fpt.is.bnk.fptis_platform.service.
         var user = currentUserProvider.getCurrentUser();
 
         Optional<Attendance> existingAttendance = attendanceRepository
-                .findByUserIdAndDate(user.getId(), LocalDate.now());
+                .findByProfileProfileIdAndDate(user.getProfile().getProfileId(), LocalDate.now());
 
         if (existingAttendance.isPresent())
             throw new AppException(ErrorCode.ATTENDANCE_ALREADY_CHECKED_IN);
 
 
         Attendance attendance = new Attendance();
-        attendance.setUser(user);
+        attendance.setProfile(user.getProfile());
         attendance.setDate(LocalDate.now());
         attendance.checkIn(scheduledTimeIn);
 
@@ -67,7 +67,7 @@ public class AttendanceServiceImpl implements fpt.is.bnk.fptis_platform.service.
         var user = currentUserProvider.getCurrentUser();
 
         Optional<Attendance> attendanceOpt = attendanceRepository
-                .findByUserIdAndDate(user.getId(), LocalDate.now());
+                .findByProfileProfileIdAndDate(user.getProfile().getProfileId(), LocalDate.now());
 
         if (attendanceOpt.isPresent()) {
 
@@ -90,7 +90,7 @@ public class AttendanceServiceImpl implements fpt.is.bnk.fptis_platform.service.
     public AttendanceResponse getCurrentAttendanceByUser() {
         var user = currentUserProvider.getCurrentUser();
         var attendance = attendanceRepository
-                .findByUserIdAndDate(user.getId(), LocalDate.now())
+                .findByProfileProfileIdAndDate(user.getProfile().getProfileId(), LocalDate.now())
                 .orElse(null);
 
         if (attendance != null)
@@ -102,7 +102,7 @@ public class AttendanceServiceImpl implements fpt.is.bnk.fptis_platform.service.
     public Page<AttendanceResponse> getAttendanceByUser(Pageable pageable) {
         var user = currentUserProvider.getCurrentUser();
         return attendanceRepository
-                .findByUserId(user.getId(), pageable)
+                .findByProfileProfileId(user.getProfile().getProfileId(), pageable)
                 .map(attendanceMapper::toAttendanceResponse);
     }
 

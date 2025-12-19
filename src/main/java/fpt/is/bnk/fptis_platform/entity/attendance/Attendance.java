@@ -1,7 +1,7 @@
 package fpt.is.bnk.fptis_platform.entity.attendance;
 
 import fpt.is.bnk.fptis_platform.entity.BaseEntity;
-import fpt.is.bnk.fptis_platform.entity.user.User;
+import fpt.is.bnk.fptis_platform.entity.user.Profile;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -29,8 +29,8 @@ public class Attendance extends BaseEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "profile_id", nullable = false)
+    private Profile profile;
 
     @Column(nullable = false)
     private LocalDate date;
