@@ -70,9 +70,7 @@ public class SecurityConfiguration {
                 )
                 // ==========================================================================================
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(jwt -> jwt
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter)
-                        )
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
                         .bearerTokenResolver(customBearerTokenResolver)
                 );

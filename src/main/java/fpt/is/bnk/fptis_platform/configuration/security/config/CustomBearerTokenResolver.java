@@ -49,7 +49,7 @@ public class CustomBearerTokenResolver implements BearerTokenResolver {
         String token = delegate.resolve(request);
         if (token == null) return null;
 
-        if (Boolean.TRUE.equals(redis.hasKey("ACCESS_BLACKLIST:" + token)))
+        if (redis.hasKey("ACCESS_BLACKLIST:" + token))
             return null;
 
         return token;
