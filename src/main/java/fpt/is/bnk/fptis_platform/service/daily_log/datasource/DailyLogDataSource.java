@@ -28,7 +28,6 @@ public class DailyLogDataSource implements JRDataSource {
     public Object getFieldValue(JRField jrField) throws JRException {
         if (currentValue == null) return null;
 
-        // Gọi trực tiếp getter để tối ưu tốc độ và tránh lỗi bộ nhớ
         return switch (jrField.getName()) {
             case "id" -> currentValue.getId();
             case "mainTask" -> currentValue.getMainTask();

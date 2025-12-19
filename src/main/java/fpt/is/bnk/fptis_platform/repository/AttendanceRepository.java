@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
 
     Optional<Attendance> findByProfileProfileIdAndDate(Long profileId, LocalDate date);
-    
+
     Page<Attendance> findByProfileProfileId(Long profileId, Pageable pageable);
 
     List<Attendance> findByProfileProfileId(Long profileId);
@@ -29,5 +29,5 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long> {
             "UNION ALL " +
             "SELECT 'CHECKED_OUT_EARLY' AS status, COUNT(a) AS count " +
             "FROM Attendance a WHERE a.profile.profileId = :profileId AND a.checkOutStatus = 'CHECKED_OUT_EARLY'")
-    List<Object[]> countStatusByUserId(Long profileId);
+    List<Object[]> countStatusByProfileId(Long profileId);
 }

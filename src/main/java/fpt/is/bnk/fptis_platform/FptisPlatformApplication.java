@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableFeignClients
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
 @EnableMethodSecurity
-@EnableProcessApplication
 public class FptisPlatformApplication {
 
     public static void main(String[] args) {

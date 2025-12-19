@@ -3,10 +3,7 @@ package fpt.is.bnk.fptis_platform.entity.attendance;
 import fpt.is.bnk.fptis_platform.entity.BaseEntity;
 import fpt.is.bnk.fptis_platform.entity.user.Profile;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
@@ -28,8 +25,9 @@ public class Attendance extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "profile_id", nullable = false)
+    @ToString.Exclude
     private Profile profile;
 
     @Column(nullable = false)

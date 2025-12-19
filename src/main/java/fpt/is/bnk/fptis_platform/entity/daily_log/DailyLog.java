@@ -3,10 +3,7 @@ package fpt.is.bnk.fptis_platform.entity.daily_log;
 import fpt.is.bnk.fptis_platform.entity.BaseEntity;
 import fpt.is.bnk.fptis_platform.entity.user.Profile;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
@@ -42,5 +39,6 @@ public class DailyLog extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "profile_id", nullable = false)
+    @ToString.Exclude
     Profile profile;
 }
