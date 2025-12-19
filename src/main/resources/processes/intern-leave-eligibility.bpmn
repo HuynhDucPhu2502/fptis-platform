@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_15iborf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.41.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.24.0">
+  <bpmn:process id="intern_leave_eligibility" name="Intern Leave Eligibility Check" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_16fk7gv</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_16fk7gv" sourceRef="StartEvent_1" targetRef="Activity_107tolo" />
+    <bpmn:userTask id="Activity_107tolo" name="Submit Leave Request">
+      <bpmn:incoming>Flow_16fk7gv</bpmn:incoming>
+      <bpmn:outgoing>Flow_15s5crd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_15s5crd" sourceRef="Activity_107tolo" targetRef="Activity_0xkpxat" />
+    <bpmn:serviceTask id="Activity_0xkpxat" name="Aggregate Attendance Statistics">
+      <bpmn:incoming>Flow_15s5crd</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qujkdc</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0qujkdc" sourceRef="Activity_0xkpxat" targetRef="Activity_02idle7" />
+    <bpmn:businessRuleTask id="Activity_02idle7" name="Evaluate Leave Eligibility (DMN)" camunda:resultVariable="isEligibleForLeave" camunda:decisionRef="intern_leave_eligibility_decision" camunda:mapDecisionResult="singleResult">
+      <bpmn:incoming>Flow_0qujkdc</bpmn:incoming>
+      <bpmn:outgoing>Flow_0nsrhp2</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:exclusiveGateway id="Gateway_1vszlut">
+      <bpmn:incoming>Flow_0nsrhp2</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qiud5d</bpmn:outgoing>
+      <bpmn:outgoing>Flow_04z2b16</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0nsrhp2" sourceRef="Activity_02idle7" targetRef="Gateway_1vszlut" />
+    <bpmn:sequenceFlow id="Flow_0qiud5d" sourceRef="Gateway_1vszlut" targetRef="Activity_0u0t0xc">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${not isEligibleForLeave}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_04z2b16" sourceRef="Gateway_1vszlut" targetRef="Activity_0wo56y8">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isEligibleForLeave}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:scriptTask id="Activity_0wo56y8" name="Thành Công" scriptFormat="JavaScript">
+      <bpmn:incoming>Flow_04z2b16</bpmn:incoming>
+      <bpmn:script>print("Thành công")</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_0u0t0xc" name="Thất Bại" scriptFormat="JavaScript">
+      <bpmn:incoming>Flow_0qiud5d</bpmn:incoming>
+      <bpmn:script>print("Thất bại")</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:textAnnotation id="TextAnnotation_1i0iyll">
+      <bpmn:text>Người dùng (Intern) gửi đơn xin phép kèm nội dung</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0dp3fdq" associationDirection="None" sourceRef="Activity_107tolo" targetRef="TextAnnotation_1i0iyll" />
+    <bpmn:textAnnotation id="TextAnnotation_0l2axb6">
+      <bpmn:text>Chuẩn bị dữ liệu để đẩy vào  DMN</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_030dssn" associationDirection="None" sourceRef="Activity_0xkpxat" targetRef="TextAnnotation_0l2axb6" />
+    <bpmn:textAnnotation id="TextAnnotation_0m3vm73">
+      <bpmn:text>Kiểm tra xem người dùng có đạt đủ điều kiện không</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_18pq0mu" associationDirection="None" sourceRef="Activity_02idle7" targetRef="TextAnnotation_0m3vm73" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="intern_leave_eligibility">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="192" y="262" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10qmuu3_di" bpmnElement="Activity_107tolo">
+        <dc:Bounds x="410" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10heonf_di" bpmnElement="Activity_0xkpxat">
+        <dc:Bounds x="650" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0c2ihox_di" bpmnElement="Activity_02idle7">
+        <dc:Bounds x="890" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1vszlut_di" bpmnElement="Gateway_1vszlut" isMarkerVisible="true">
+        <dc:Bounds x="915" y="425" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1t7dv7w_di" bpmnElement="Activity_0wo56y8">
+        <dc:Bounds x="750" y="510" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0omir5i_di" bpmnElement="Activity_0u0t0xc">
+        <dc:Bounds x="1020" y="510" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_1i0iyll_di" bpmnElement="TextAnnotation_1i0iyll">
+        <dc:Bounds x="480" y="90" width="100" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0l2axb6_di" bpmnElement="TextAnnotation_0l2axb6">
+        <dc:Bounds x="740" y="97" width="100" height="55" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0m3vm73_di" bpmnElement="TextAnnotation_0m3vm73">
+        <dc:Bounds x="970" y="97" width="100" height="70" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_16fk7gv_di" bpmnElement="Flow_16fk7gv">
+        <di:waypoint x="228" y="280" />
+        <di:waypoint x="410" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15s5crd_di" bpmnElement="Flow_15s5crd">
+        <di:waypoint x="510" y="280" />
+        <di:waypoint x="650" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qujkdc_di" bpmnElement="Flow_0qujkdc">
+        <di:waypoint x="750" y="280" />
+        <di:waypoint x="890" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_0dp3fdq_di" bpmnElement="Association_0dp3fdq">
+        <di:waypoint x="476" y="240" />
+        <di:waypoint x="508" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_030dssn_di" bpmnElement="Association_030dssn">
+        <di:waypoint x="721" y="240" />
+        <di:waypoint x="769" y="152" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_18pq0mu_di" bpmnElement="Association_18pq0mu">
+        <di:waypoint x="946" y="240" />
+        <di:waypoint x="988" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nsrhp2_di" bpmnElement="Flow_0nsrhp2">
+        <di:waypoint x="940" y="320" />
+        <di:waypoint x="940" y="425" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qiud5d_di" bpmnElement="Flow_0qiud5d">
+        <di:waypoint x="965" y="450" />
+        <di:waypoint x="1070" y="450" />
+        <di:waypoint x="1070" y="510" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04z2b16_di" bpmnElement="Flow_04z2b16">
+        <di:waypoint x="915" y="450" />
+        <di:waypoint x="800" y="450" />
+        <di:waypoint x="800" y="510" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

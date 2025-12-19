@@ -1,5 +1,6 @@
 package fpt.is.bnk.fptis_platform;
 
+import org.camunda.bpm.spring.boot.starter.annotation.EnableProcessApplication;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -9,7 +10,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @SpringBootApplication
 @EnableFeignClients
 @EnableJpaAuditing(auditorAwareRef = "auditorProvider")
-@EnableMethodSecurity()
+@EnableMethodSecurity
+@EnableProcessApplication
 public class FptisPlatformApplication {
 
     public static void main(String[] args) {

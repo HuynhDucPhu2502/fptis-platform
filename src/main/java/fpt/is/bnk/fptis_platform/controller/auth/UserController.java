@@ -1,5 +1,7 @@
 package fpt.is.bnk.fptis_platform.controller.auth;
 
+import fpt.is.bnk.fptis_platform.advice.base.ErrorCode;
+import fpt.is.bnk.fptis_platform.advice.exception.AppException;
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;
 import fpt.is.bnk.fptis_platform.dto.PageResponse;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
@@ -87,8 +89,13 @@ public class UserController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<String>> refresh(
-            @CookieValue("refresh_token") String refreshToken
+            @CookieValue(name = "refresh_token", required = false) String refreshToken
     ) {
+
+        if (refreshToken == null || refreshToken.isBlank())
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+
         var result = userService.refresh(refreshToken);
 
         var cookie = ResponseCookie.from("refresh_token", (String) result.get("refreshToken"))

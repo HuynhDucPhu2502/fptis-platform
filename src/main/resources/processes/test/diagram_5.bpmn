@@ -57,6 +57,18 @@ user;</bpmn:script>
     <bpmn:sequenceFlow id="Flow_1ldcacg" sourceRef="Activity_0ozsmfd" targetRef="Activity_0je4s25" />
     <bpmn:sequenceFlow id="Flow_1pv7di9" sourceRef="Activity_0pa47bu" targetRef="Event_01yta4d" />
     <bpmn:serviceTask id="Activity_0pa47bu" name="Gửi Email" camunda:class="fpt.is.bnk.fptis_platform.controller.test.TestDelegate">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="userName">
+            <camunda:script scriptFormat="JavaScript">var username = "Huynh Duc Phu";
+
+username;</camunda:script>
+          </camunda:inputParameter>
+          <camunda:outputParameter name="Output_2u9fvm9">
+            <camunda:script scriptFormat="JavaScript">print(test)</camunda:script>
+          </camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_05w7yf6</bpmn:incoming>
       <bpmn:outgoing>Flow_1pv7di9</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -72,27 +84,27 @@ user;</bpmn:script>
       <bpmndi:BPMNShape id="Activity_1g3lwgk_di" bpmnElement="Activity_0je4s25">
         <dc:Bounds x="400" y="110" width="100" height="80" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_01yta4d_di" bpmnElement="Event_01yta4d">
-        <dc:Bounds x="672" y="132" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1e6iruo_di" bpmnElement="Activity_0pa47bu">
         <dc:Bounds x="530" y="110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_01yta4d_di" bpmnElement="Event_01yta4d">
+        <dc:Bounds x="722" y="132" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1fhivgi_di" bpmnElement="Flow_1fhivgi">
         <di:waypoint x="188" y="150" />
         <di:waypoint x="250" y="150" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1ldcacg_di" bpmnElement="Flow_1ldcacg">
-        <di:waypoint x="350" y="150" />
-        <di:waypoint x="400" y="150" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_05w7yf6_di" bpmnElement="Flow_05w7yf6">
         <di:waypoint x="500" y="150" />
         <di:waypoint x="530" y="150" />
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ldcacg_di" bpmnElement="Flow_1ldcacg">
+        <di:waypoint x="350" y="150" />
+        <di:waypoint x="400" y="150" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1pv7di9_di" bpmnElement="Flow_1pv7di9">
         <di:waypoint x="630" y="150" />
-        <di:waypoint x="672" y="150" />
+        <di:waypoint x="722" y="150" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
