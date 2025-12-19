@@ -59,8 +59,9 @@ public class AttendanceReportServiceImpl implements fpt.is.bnk.fptis_platform.se
 
         JRDataSource dataSource = new JRBeanCollectionDataSource(reportData);
 
-        List<Object[]> statusCount = attendanceRepository.countStatusByProfileId(user.getId());
+        List<Object[]> statusCount = attendanceRepository.countStatusByProfileId(user.getProfile().getProfileId());
         List<StatusCountReportObject> statusCountList = transformToStatusCountDTO(statusCount);
+        statusCountList.forEach(x -> System.out.println(x));
 
         JRDataSource pieChartDataSource = new JRBeanCollectionDataSource(statusCountList);
 

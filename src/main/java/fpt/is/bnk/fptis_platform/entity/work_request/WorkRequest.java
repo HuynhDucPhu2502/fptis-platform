@@ -57,8 +57,8 @@ public class WorkRequest extends BaseEntity {
     Double earlyCheckoutRatio;
 
     // ------
-    @Column(name = "approver_id")
-    String approverId;
+    @Column(name = "approver_name")
+    String approverName;
 
     @Column(name = "admin_note", columnDefinition = "TEXT")
     String adminNote;

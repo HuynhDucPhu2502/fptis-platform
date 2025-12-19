@@ -53,7 +53,7 @@
             </element>
         </element>
         <element kind="chart" chartType="pie" uuid="aa7535d7-0cbe-47e1-bba4-23aa96360961" x="0" y="150" width="555"
-                 height="218" evaluationTime="Report">
+                 height="218">
             <dataset kind="pie">
                 <datasetRun uuid="895e267e-9404-4c20-836e-931536cac382" subDataset="PIE_CHART_DS">
                     <dataSourceExpression><![CDATA[$P{PIE_CHART_DS}]]></dataSourceExpression>
@@ -61,7 +61,7 @@
                 <series>
                     <keyExpression><![CDATA[$F{status}]]></keyExpression>
                     <valueExpression><![CDATA[$F{count}]]></valueExpression>
-                    <labelExpression><![CDATA[$F{count} + ""]]></labelExpression>
+                    <labelExpression><![CDATA[$F{status} + " (" + $F{count} + ")"]]></labelExpression>
                 </series>
             </dataset>
             <plot>

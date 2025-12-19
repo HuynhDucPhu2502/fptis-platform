@@ -13,8 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +42,10 @@ public class WorkRequestServiceImpl implements fpt.is.bnk.fptis_platform.service
 
     // Mapper
     WorkRequestMapper workRequestMapper;
+
+    // Mail Sender
+    JavaMailSender javaMailSender;
+    TemplateEngine templateEngine;
 
     @Override
     public void createRequest(WorkRequestRequest request) {
@@ -98,7 +104,23 @@ public class WorkRequestServiceImpl implements fpt.is.bnk.fptis_platform.service
         workRequestRepository.save(workRequest);
 
         execution.setVariable("totalAttendance", totalAttendance);
-        execution.setVariable("onTi meCheckInRatio", onTimeRatio);
+        execution.setVariable("onTimeCheckInRatio", onTimeRatio);
         execution.setVariable("earlyCheckoutRatio", earlyRatio);
     }
+
+    @Transactional
+    @Override
+    public void updateStatus(Long requestId, String status, String reason) {
+        WorkRequest workRequest = workRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy yêu cầu: " + requestId));
+
+        workRequest.setWorkRequestStatus(WorkRequestStatus.valueOf(status));
+
+        if (reason != null)
+            workRequest.setAdminNote(reason);
+
+        workRequestRepository.save(workRequest);
+
+    }
+
 }
