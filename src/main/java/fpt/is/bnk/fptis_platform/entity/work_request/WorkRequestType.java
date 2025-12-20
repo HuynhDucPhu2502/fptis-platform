@@ -9,8 +9,7 @@ import lombok.Getter;
 @Getter
 public enum WorkRequestType {
     LEAVE("Nghỉ phép"),
-    REMOTE("Làm việc từ xa"),
-    MISSION("Đi công tác");
+    REMOTE("Làm việc từ xa");
 
     private final String description;
 

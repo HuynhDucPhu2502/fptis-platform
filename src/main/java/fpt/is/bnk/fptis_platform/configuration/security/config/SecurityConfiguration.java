@@ -65,6 +65,8 @@ public class SecurityConfiguration {
                 // ==========================================================================================
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS).permitAll()
+                        .requestMatchers("/api/mentor/**").hasRole("MENTOR")
+                        .requestMatchers("/api/intern/**").hasRole("INTERN")
                         .requestMatchers(WHITELIST).permitAll()
                         .anyRequest().authenticated()
                 )

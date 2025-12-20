@@ -1,21 +1,16 @@
 package fpt.is.bnk.fptis_platform.service.work_request;
 
-import fpt.is.bnk.fptis_platform.dto.request.work_request.WorkRequestRequest;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
-import org.springframework.transaction.annotation.Transactional;
+import fpt.is.bnk.fptis_platform.dto.response.work_request.MentorTaskResponse;
+import fpt.is.bnk.fptis_platform.dto.response.work_request.WorkRequestResponse;
+
+import java.util.List;
 
 /**
- * Admin 12/19/2025
+ * Admin 12/20/2025
  *
  **/
 public interface WorkRequestService {
-    void createRequest(WorkRequestRequest request);
+    List<MentorTaskResponse> getPendingMentorTasks();
 
-    void aggregateStatistics(
-            Long requestId,
-            DelegateExecution execution
-    );
-
-    @Transactional
-    void updateStatus(Long requestId, String status, String reason);
+    List<WorkRequestResponse> getMyRequests();
 }

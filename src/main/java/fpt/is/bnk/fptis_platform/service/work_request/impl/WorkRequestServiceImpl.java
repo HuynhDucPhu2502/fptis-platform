@@ -1,126 +1,103 @@
 package fpt.is.bnk.fptis_platform.service.work_request.impl;
 
-import fpt.is.bnk.fptis_platform.dto.request.work_request.WorkRequestRequest;
+import fpt.is.bnk.fptis_platform.dto.response.work_request.MentorTaskResponse;
+import fpt.is.bnk.fptis_platform.dto.response.work_request.WorkRequestResponse;
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.entity.work_request.WorkRequest;
-import fpt.is.bnk.fptis_platform.entity.work_request.WorkRequestStatus;
 import fpt.is.bnk.fptis_platform.mapper.WorkRequestMapper;
 import fpt.is.bnk.fptis_platform.repository.AttendanceRepository;
 import fpt.is.bnk.fptis_platform.repository.WorkRequestRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
+import fpt.is.bnk.fptis_platform.service.work_request.WorkRequestService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
+import org.camunda.bpm.engine.TaskService;
+import org.camunda.bpm.engine.task.Task;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * Admin 12/19/2025
+ * Admin 12/20/2025
  *
  **/
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class WorkRequestServiceImpl implements fpt.is.bnk.fptis_platform.service.work_request.WorkRequestService {
+public class WorkRequestServiceImpl implements WorkRequestService {
+
+    static String MENTOR_REVIEW_ACTIVITY_ID = "user_task_mentor_review";
 
     // Provider
     CurrentUserProvider currentUserProvider;
 
     // Repository
     WorkRequestRepository workRequestRepository;
-    AttendanceRepository attendanceRepository;
 
+    // Flow
     RuntimeService runtimeService;
 
     // Mapper
     WorkRequestMapper workRequestMapper;
+    TaskService taskService;
 
-    // Mail Sender
-    JavaMailSender javaMailSender;
-    TemplateEngine templateEngine;
 
     @Override
-    public void createRequest(WorkRequestRequest request) {
-        User user = currentUserProvider.getCurrentUser();
+    public List<MentorTaskResponse> getPendingMentorTasks() {
+        List<Task> tasks = taskService.createTaskQuery()
+                .taskDefinitionKey(MENTOR_REVIEW_ACTIVITY_ID)
+                .active()
+                .list();
 
-        WorkRequest workRequest = workRequestMapper.toWorkRequest(request);
-        workRequest.setWorkRequestStatus(WorkRequestStatus.PENDING_SYSTEM);
-        workRequest.setProfile(user.getProfile());
+        if (tasks.isEmpty()) return List.of();
 
+        Map<String, Task> taskMap = new HashMap<>();
+        for (Task task : tasks) {
+            Long requestId = (Long) runtimeService.getVariable(task.getExecutionId(), "requestId");
 
-        var savedWorkRequest = workRequestRepository.save(workRequest);
-
-
-        Map<String, Object> vars = new HashMap<>();
-        vars.put("requestId", savedWorkRequest.getId());
-        vars.put("profileId", user.getProfile().getProfileId());
-
-        var processInstance = runtimeService.startProcessInstanceByKey(
-                "intern_leave_eligibility",
-                savedWorkRequest.getId().toString(),
-                vars
-        );
-
-        workRequest.setProcessInstanceId(processInstance.getId());
-        workRequestRepository.save(workRequest);
-    }
-
-    @Override
-    @Transactional
-    public void aggregateStatistics(
-            Long requestId,
-            DelegateExecution execution
-    ) {
-        WorkRequest workRequest = workRequestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy yêu cầu: " + requestId));
-
-        List<Object[]> res = attendanceRepository
-                .countStatusByProfileId(workRequest.getProfile().getProfileId());
-
-        Map<String, Long> statsMap = new HashMap<>();
-        for (Object[] row : res) {
-            statsMap.put((String) row[0], (Long) row[1]);
+            if (requestId != null)
+                taskMap.put(requestId.toString(), task);
         }
 
-        long onTimeIn = statsMap.getOrDefault("CHECKED_IN_ON_TIME", 0L);
-        long lateIn = statsMap.getOrDefault("CHECKED_IN_LATE", 0L);
-        long earlyOut = statsMap.getOrDefault("CHECKED_OUT_EARLY", 0L);
+        List<Long> ids = taskMap.keySet().stream().map(Long::valueOf).toList();
+        List<WorkRequest> workRequests = workRequestRepository.findAllById(ids);
 
-        int totalAttendance = (int) (onTimeIn + lateIn);
-        double onTimeRatio = totalAttendance > 0 ? (double) onTimeIn / totalAttendance : 0.0;
-        double earlyRatio = totalAttendance > 0 ? (double) earlyOut / totalAttendance : 0.0;
+        return workRequests.stream().map(request -> {
+            Task task = taskMap.get(request.getId().toString());
 
-        workRequest.setTotalAttendance(totalAttendance);
-        workRequest.setOnTimeRatio(onTimeRatio);
-        workRequest.setEarlyCheckoutRatio(earlyRatio);
-        workRequestRepository.save(workRequest);
+            MentorTaskResponse response = workRequestMapper.toMentorTaskResponse(request);
 
-        execution.setVariable("totalAttendance", totalAttendance);
-        execution.setVariable("onTimeCheckInRatio", onTimeRatio);
-        execution.setVariable("earlyCheckoutRatio", earlyRatio);
+            response.setTaskId(task.getId());
+            response.setTaskCreateTime(
+                    task.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
+            );
+
+            Map<String, Object> dmnResult = (Map<String, Object>) runtimeService
+                    .getVariable(task.getExecutionId(), "isEligibleForLeave");
+            if (dmnResult != null)
+                response.setSystemNote((String) dmnResult.get("reason"));
+
+
+            return response;
+        }).toList();
     }
 
-    @Transactional
     @Override
-    public void updateStatus(Long requestId, String status, String reason) {
-        WorkRequest workRequest = workRequestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy yêu cầu: " + requestId));
+    public List<WorkRequestResponse> getMyRequests() {
+        User user = currentUserProvider.getCurrentUser();
+        List<WorkRequest> myRequests = workRequestRepository
+                .findByProfileProfileId(user.getProfile().getProfileId());
 
-        workRequest.setWorkRequestStatus(WorkRequestStatus.valueOf(status));
-
-        if (reason != null)
-            workRequest.setAdminNote(reason);
-
-        workRequestRepository.save(workRequest);
-
+        return myRequests.stream()
+                .map(workRequestMapper::toResponse)
+                .toList();
     }
 
 }
