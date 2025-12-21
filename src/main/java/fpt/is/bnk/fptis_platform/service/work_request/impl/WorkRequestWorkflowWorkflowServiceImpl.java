@@ -36,7 +36,6 @@ import java.util.Map;
 public class WorkRequestWorkflowWorkflowServiceImpl implements WorkRequestWorkflowService {
 
     static String PROCESS_ID = "intern_work_request_process";
-    static String MENTOR_REVIEW_ACTIVITY_ID = "user_task_mentor_review";
 
     // Provider
     CurrentUserProvider currentUserProvider;

@@ -27,7 +27,10 @@ public class CustomBearerTokenResolver implements BearerTokenResolver {
             "/api/users/login",
             "/api/users/register",
             "/api/users/refresh",
-            "/actuator/health/**"
+
+            "/actuator/health/**",
+
+            "/camunda/**"
     );
 
     RedisTemplate<String, String> redis;

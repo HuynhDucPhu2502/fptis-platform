@@ -42,7 +42,7 @@ public class SecurityConfiguration {
             "/actuator/health",
             "/actuator/health/**",
 
-            "/execute/**",
+            "/camunda/**",
     };
 
     @Bean

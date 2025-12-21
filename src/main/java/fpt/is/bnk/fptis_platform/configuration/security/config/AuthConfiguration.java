@@ -64,11 +64,11 @@ public class AuthConfiguration {
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
 
             List<String> roles = jwt.getClaimAsStringList("roles");
-            if (roles.isEmpty()) return List.of();
+            if (roles == null || roles.isEmpty()) return List.of();
 
             List<GrantedAuthority> roleAuthorities = roles
                     .stream()
-                    .map(r -> new SimpleGrantedAuthority("ROLE_" + r))
+                    .map(r -> new SimpleGrantedAuthority("ROLE_" + r.toUpperCase()))
                     .map(a -> (GrantedAuthority) a)
                     .toList();
 

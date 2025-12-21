@@ -78,7 +78,7 @@ public class WorkRequestServiceImpl implements WorkRequestService {
             response.setTaskCreateTime(
                     task.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
             );
-
+            
             Map<String, Object> dmnResult = (Map<String, Object>) runtimeService
                     .getVariable(task.getExecutionId(), "isEligibleForLeave");
             if (dmnResult != null)
@@ -90,7 +90,7 @@ public class WorkRequestServiceImpl implements WorkRequestService {
     }
 
     @Override
-    public List<WorkRequestResponse> getMyRequests() {
+    public List<WorkRequestResponse> getCurrentUserWorkRequests() {
         User user = currentUserProvider.getCurrentUser();
         List<WorkRequest> myRequests = workRequestRepository
                 .findByProfileProfileId(user.getProfile().getProfileId());

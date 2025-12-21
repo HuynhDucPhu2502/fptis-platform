@@ -2,7 +2,7 @@
 -- INSERT ROLES
 -- =========================
 INSERT INTO roles (name)
-VALUES ('ADMIN'), ('MEMBER')
+VALUES ('MENTOR'), ('INTERN')
 ON CONFLICT (name) DO NOTHING;
 
 -- =========================
@@ -32,7 +32,7 @@ JOIN permissions p ON p.name IN (
     'INTERN_LOG_UPDATE',
     'INTERN_LOG_DELETE'
 )
-WHERE r.name = 'ADMIN'
+WHERE r.name = 'MENTOR'
 ON CONFLICT DO NOTHING;
 
 -- MEMBER: 
@@ -45,5 +45,5 @@ JOIN permissions p ON p.name IN (
     'INTERN_LOG_UPDATE',
     'INTERN_LOG_DELETE'
 )
-WHERE r.name = 'MEMBER'
+WHERE r.name = 'INTERN'
 ON CONFLICT DO NOTHING;

@@ -23,7 +23,7 @@ public interface WorkRequestMapper {
     @Mapping(target = "systemNote", ignore = true)
     @Mapping(target = "requestId", source = "id")
     @Mapping(target = "type", source = "workRequestType")
-    @Mapping(target = "internEmail", source = "profile.email")
+    @Mapping(target = "internEmail", source = "profile.user.email")
     MentorTaskResponse toMentorTaskResponse(WorkRequest workRequest);
 
 }

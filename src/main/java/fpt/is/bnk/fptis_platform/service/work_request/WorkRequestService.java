@@ -12,5 +12,5 @@ import java.util.List;
 public interface WorkRequestService {
     List<MentorTaskResponse> getPendingMentorTasks();
 
-    List<WorkRequestResponse> getMyRequests();
+    List<WorkRequestResponse> getCurrentUserWorkRequests();
 }

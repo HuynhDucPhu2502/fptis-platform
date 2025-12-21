@@ -4,7 +4,7 @@
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_0p6xg1c</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:serviceTask id="Activity_0xkpxat" name="Aggregate Attendance Statistics" camunda:expression="${workRequestWorkflowServiceImpl.aggregateStatistics(requestId, execution)}">
+    <bpmn:serviceTask id="Activity_0xkpxat" name="Aggregate Attendance Statistics" camunda:expression="${workRequestWorkflowWorkflowServiceImpl.aggregateStatistics(requestId, execution)}">
       <bpmn:incoming>Flow_0p6xg1c</bpmn:incoming>
       <bpmn:outgoing>Flow_0qujkdc</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -29,7 +29,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${isEligibleForLeave.allow}
             </bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:serviceTask id="Activity_0re45s0" name="Update Pending Status" camunda:expression="${workRequestWorkflowServiceImpl.updateStatus(requestId, &#34;PENDING_MENTOR&#34;, reason)}">
+    <bpmn:serviceTask id="Activity_0re45s0" name="Update Pending Status" camunda:expression="${workRequestWorkflowWorkflowServiceImpl.updateStatus(requestId, &#34;PENDING_MENTOR&#34;, isEligibleForLeave.reason)}">
       <bpmn:incoming>Flow_1yop3vt</bpmn:incoming>
       <bpmn:outgoing>Flow_0grvgp5</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -57,15 +57,15 @@
       <bpmn:incoming>Flow_0grvgp5</bpmn:incoming>
       <bpmn:outgoing>Flow_1mqwk4l</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:serviceTask id="Activity_1smzjt3" name="Update Rejected Status" camunda:expression="${workRequestWorkflowServiceImpl.updateStatus(requestId, &#34;REJECTED&#34;, isEligibleForLeave.reason)}">
+    <bpmn:serviceTask id="Activity_1smzjt3" name="Update Rejected Status" camunda:expression="${workRequestWorkflowWorkflowServiceImpl.updateStatus(requestId, &#34;REJECTED&#34;, isEligibleForLeave.reason)}">
       <bpmn:incoming>Flow_0h9pfyc</bpmn:incoming>
       <bpmn:outgoing>Flow_1f6eoi0</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="Activity_0fuju8v" name="Approve Request" camunda:expression="${workRequestWorkflowServiceImpl.updateStatus(requestId, &#34;APPROVED&#34;, mentorComment)}">
+    <bpmn:serviceTask id="Activity_0fuju8v" name="Approve Request" camunda:expression="${workRequestWorkflowWorkflowServiceImpl.updateStatus(requestId, &#34;APPROVED&#34;, mentorComment)}">
       <bpmn:incoming>Flow_1wh5s08</bpmn:incoming>
       <bpmn:outgoing>Flow_1jox5x0</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="Activity_03r969j" name="Reject Request" camunda:expression="${workRequestWorkflowServiceImpl.updateStatus(requestId, &#34;REJECTED&#34;, isEligibleForLeave.reason)}">
+    <bpmn:serviceTask id="Activity_03r969j" name="Reject Request" camunda:expression="${workRequestWorkflowWorkflowServiceImpl.updateStatus(requestId, &#34;REJECTED&#34;, mentorComment)}">
       <bpmn:incoming>Flow_08o1rcn</bpmn:incoming>
       <bpmn:outgoing>Flow_0dniafa</bpmn:outgoing>
     </bpmn:serviceTask>
