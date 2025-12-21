@@ -3,9 +3,10 @@ package fpt.is.bnk.fptis_platform.service.attendance.impl;
 import fpt.is.bnk.fptis_platform.dto.report.attendance.AttendanceReportObject;
 import fpt.is.bnk.fptis_platform.dto.report.attendance.StatusCountReportObject;
 import fpt.is.bnk.fptis_platform.entity.attendance.Attendance;
-import fpt.is.bnk.fptis_platform.entity.attendance.AttendanceStatus;
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.repository.AttendanceRepository;
+import fpt.is.bnk.fptis_platform.service.attendance.AttendanceStatisticService;
+import fpt.is.bnk.fptis_platform.service.attendance.utils.AttendanceMapper;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -28,9 +28,15 @@ import java.util.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AttendanceReportServiceImpl implements fpt.is.bnk.fptis_platform.service.attendance.AttendanceReportService {
 
+    // Provider
     CurrentUserProvider currentUserProvider;
     ResourceLoader resourceLoader;
+
+    // Repository
     AttendanceRepository attendanceRepository;
+
+    // Service
+    AttendanceStatisticService attendanceStatisticService;
 
     static String SWAP_PATH = "D:\\Projects\\fptis\\tempSwapDir";
 
@@ -57,13 +63,10 @@ public class AttendanceReportServiceImpl implements fpt.is.bnk.fptis_platform.se
                     .findByProfileProfileId(user.getProfile().getProfileId());
 
             List<AttendanceReportObject> attendancesReportData =
-                    mapToAttendanceReportObject(attendances);
-
-            List<Object[]> attendanceStatusStatistic = attendanceRepository
-                    .countStatusByProfileId(user.getProfile().getProfileId());
+                    AttendanceMapper.mapToAttendanceReportObject(attendances);
 
             List<StatusCountReportObject> attendanceStatusStatisticReportData =
-                    mapToStatusCountReportObject(attendanceStatusStatistic);
+                    attendanceStatisticService.getCurrentUserAttendanceStatistic(user);
 
             // =====================================================
             // Định nghĩa Datasource để đẩy vào Jasper
@@ -115,38 +118,5 @@ public class AttendanceReportServiceImpl implements fpt.is.bnk.fptis_platform.se
         }
     }
 
-    private static List<AttendanceReportObject> mapToAttendanceReportObject(List<Attendance> data) {
-        DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm");
-
-        return data.stream()
-                .map(attendance -> new AttendanceReportObject(
-                        attendance.getDate() != null
-                                ? attendance.getDate().format(dateFmt) : "",
-                        attendance.getTimeIn() != null
-                                ? attendance.getTimeIn().format(timeFmt) : "",
-                        attendance.getCheckInStatus() != null
-                                ? attendance.getCheckInStatus().toString() : "",
-                        attendance.getTimeOut() != null
-                                ? attendance.getTimeOut().format(timeFmt) : "",
-                        attendance.getCheckOutStatus() != null
-                                ? attendance.getCheckOutStatus().toString() : ""
-                ))
-                .toList();
-    }
-
-
-    private static List<StatusCountReportObject> mapToStatusCountReportObject(List<Object[]> statusCount) {
-        return statusCount.stream()
-                .map(obj -> {
-                    AttendanceStatus statusEnum =
-                            AttendanceStatus.valueOf((String) obj[0]);
-                    return new StatusCountReportObject(
-                            statusEnum.toString(),
-                            ((Number) obj[1]).longValue()
-                    );
-                })
-                .toList();
-    }
 
 }

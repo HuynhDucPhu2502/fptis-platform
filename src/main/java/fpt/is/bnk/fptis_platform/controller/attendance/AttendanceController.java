@@ -2,8 +2,10 @@ package fpt.is.bnk.fptis_platform.controller.attendance;
 
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;
 import fpt.is.bnk.fptis_platform.dto.PageResponse;
+import fpt.is.bnk.fptis_platform.dto.report.attendance.StatusCountReportObject;
 import fpt.is.bnk.fptis_platform.dto.response.attendance.AttendanceResponse;
 import fpt.is.bnk.fptis_platform.service.attendance.AttendanceService;
+import fpt.is.bnk.fptis_platform.service.attendance.AttendanceStatisticService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Admin 12/12/2025
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AttendanceController {
 
     AttendanceService attendanceService;
+    AttendanceStatisticService attendanceStatisticService;
 
     @PostMapping("/check-in")
     public ApiResponse<AttendanceResponse> checkIn() {
@@ -75,6 +80,13 @@ public class AttendanceController {
 
         return ApiResponse.<PageResponse<AttendanceResponse>>builder()
                 .result(pageResponse)
+                .build();
+    }
+
+    @GetMapping("/statistic")
+    public ApiResponse<List<StatusCountReportObject>> getCurrentUserAttendanceStatistic() {
+        return ApiResponse.<List<StatusCountReportObject>>builder()
+                .result(attendanceStatisticService.getCurrentUserAttendanceStatistic(null))
                 .build();
     }
 
