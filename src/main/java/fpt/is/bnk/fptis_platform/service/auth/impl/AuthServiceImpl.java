@@ -17,7 +17,7 @@ import fpt.is.bnk.fptis_platform.repository.ProfileRepository;
 import fpt.is.bnk.fptis_platform.repository.UserRepository;
 import fpt.is.bnk.fptis_platform.service.auth.JwtService;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
-import fpt.is.bnk.fptis_platform.service.auth.UserService;
+import fpt.is.bnk.fptis_platform.service.auth.AuthService;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
 @Transactional
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class AuthServiceImpl implements AuthService {
 
     CurrentUserProvider currentUserProvider;
     ProfileRepository profileRepository;
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
     ErrorNormalizer errorNormalizer;
 
 
-    public UserServiceImpl(
+    public AuthServiceImpl(
             CurrentUserProvider currentUserProvider, ProfileRepository profileRepository,
             UserRepository userRepository, JwtService jwtService,
             UserMapper userMapper, IdentityClient identityClient,
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
     static Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
     // =====================================================================
-    // PROFILE
+    // USER INFORMATION
     // =====================================================================
     @Override
     public RemoteUser getCurrentUserProfile() {
@@ -121,12 +121,6 @@ public class UserServiceImpl implements UserService {
         res.setRoles(roles);
 
         return res;
-    }
-
-    @Override
-    public Page<RemoteUser> getAllUsers(Pageable pageable) {
-        var users = userRepository.findAll(pageable);
-        return users.map(x -> userMapper.toRemoteUser(x, x.getProfile()));
     }
 
 

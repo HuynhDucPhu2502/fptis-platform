@@ -27,10 +27,10 @@ public class SecurityConfiguration {
 
     private static final String[] WHITELIST = {
             // Authentication
-            "/api/users/login",
-            "/api/users/logout",
-            "/api/users/register",
-            "/api/users/refresh",
+            "/api/auth/login",
+            "/api/auth/logout",
+            "/api/auth/register",
+            "/api/auth/refresh",
 
             "/api/internal/**",
 

@@ -1,5 +1,6 @@
 package fpt.is.bnk.fptis_platform.dto.request.authentication;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,5 +21,8 @@ public class LoginRequest {
 
     @Size(min = 6, message = "Mật khẩu ít nhất 8 ký tự")
     String password;
+
+    @NotNull(message = "Chưa định dạng cụ thể dạng mật khẩu")
+    Boolean isCrypted;
 
 }

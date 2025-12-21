@@ -7,7 +7,7 @@ import fpt.is.bnk.fptis_platform.dto.PageResponse;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 import fpt.is.bnk.fptis_platform.dto.request.authentication.LoginRequest;
 import fpt.is.bnk.fptis_platform.dto.request.authentication.RegistrationRequest;
-import fpt.is.bnk.fptis_platform.service.auth.UserService;
+import fpt.is.bnk.fptis_platform.service.auth.AuthService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,10 +33,10 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("/api/users")
-public class UserController {
+@RequestMapping("/api/auth")
+public class AuthController {
 
-    UserService userService;
+    AuthService authService;
 
     @NonFinal
     @Value("${cookie.sameSite}")
@@ -49,25 +49,16 @@ public class UserController {
     @GetMapping("/me")
     public ApiResponse<RemoteUser> getCurrentUserProfile() {
         return ApiResponse.<RemoteUser>builder()
-                .result(userService.getCurrentUserProfile())
+                .result(authService.getCurrentUserProfile())
                 .build();
     }
 
-    @PreAuthorize("hasAuthority('USERS_VIEW')")
-    @GetMapping
-    public ApiResponse<PageResponse<RemoteUser>> getAllUser(@PageableDefault Pageable pageable) {
-        PageResponse<RemoteUser> res = new PageResponse<>(userService.getAllUsers(pageable));
-
-        return ApiResponse.<PageResponse<RemoteUser>>builder()
-                .result(res)
-                .build();
-    }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<String>> login(
             @RequestBody @Valid LoginRequest request
     ) {
-        Map<String, ? extends Serializable> res = userService.login(request);
+        Map<String, ? extends Serializable> res = authService.login(request);
 
         String accessToken = (String) res.get("accessToken");
         String refreshToken = (String) res.get("refreshToken");
@@ -96,7 +87,7 @@ public class UserController {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
 
-        var result = userService.refresh(refreshToken);
+        var result = authService.refresh(refreshToken);
 
         var cookie = ResponseCookie.from("refresh_token", (String) result.get("refreshToken"))
                 .httpOnly(true)
@@ -122,7 +113,7 @@ public class UserController {
             token = authHeader.substring(7);
         }
 
-        userService.logout(token);
+        authService.logout(token);
 
         var refreshTokenCookie = ResponseCookie
                 .from("refresh_token", "")
@@ -140,7 +131,7 @@ public class UserController {
     @PostMapping("/register")
     public ApiResponse<RemoteUser> register(@RequestBody @Valid RegistrationRequest request) {
         return ApiResponse.<RemoteUser>builder()
-                .result(userService.register(request))
+                .result(authService.register(request))
                 .build();
     }
 

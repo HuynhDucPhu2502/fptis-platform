@@ -13,11 +13,9 @@ import java.util.Map;
  * Admin 11/25/2025
  *
  **/
-public interface UserService {
+public interface AuthService {
     RemoteUser getCurrentUserProfile();
-
-    Page<RemoteUser> getAllUsers(Pageable pageable);
-
+    
     Map<String, ? extends Serializable> login(LoginRequest request);
 
     void logout(String accessToken);

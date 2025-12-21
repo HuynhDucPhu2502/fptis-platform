@@ -24,9 +24,9 @@ public class CustomBearerTokenResolver implements BearerTokenResolver {
     AntPathMatcher pathMatcher = new AntPathMatcher();
 
     List<String> skipPaths = List.of(
-            "/api/users/login",
-            "/api/users/register",
-            "/api/users/refresh",
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/refresh",
 
             "/actuator/health/**",
 
