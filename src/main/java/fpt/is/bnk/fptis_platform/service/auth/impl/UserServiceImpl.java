@@ -27,8 +27,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -36,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -108,7 +107,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public RemoteUser getCurrentUserProfile() {
         var user = currentUserProvider.getCurrentUser();
-        return userMapper.toRemoteUser(user, user.getProfile());
+
+        var res = userMapper.toRemoteUser(user, user.getProfile());
+
+        List<String> roles = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .stream()
+                .map(Object::toString)
+                .toList();
+
+        res.setRoles(roles);
+
+        return res;
     }
 
     @Override

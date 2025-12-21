@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Admin 12/1/2025
@@ -30,5 +31,8 @@ public class RemoteUser {
 
     // Base Entity
     Boolean active;
+
+    // Role
+    List<String> roles;
 
 }

@@ -20,5 +20,6 @@ public interface UserMapper {
     @Mapping(target = "lastName", source = "profile.lastName")
     @Mapping(target = "dob", expression = "java(profile.getDob() != null ? profile.getDob().toString() : null)")
     @Mapping(target = "active", source = "user.active")
+    @Mapping(target = "roles", ignore = true)
     RemoteUser toRemoteUser(User user, Profile profile);
 }
