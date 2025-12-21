@@ -31,6 +31,7 @@ public class SecurityConfiguration {
             "/api/auth/logout",
             "/api/auth/register",
             "/api/auth/refresh",
+            "/api/auth/public-key",
 
             "/api/internal/**",
 

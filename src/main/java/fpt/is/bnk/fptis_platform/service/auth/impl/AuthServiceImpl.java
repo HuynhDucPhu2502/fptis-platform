@@ -16,6 +16,7 @@ import fpt.is.bnk.fptis_platform.repository.IdentityClient;
 import fpt.is.bnk.fptis_platform.repository.ProfileRepository;
 import fpt.is.bnk.fptis_platform.repository.UserRepository;
 import fpt.is.bnk.fptis_platform.service.auth.JwtService;
+import fpt.is.bnk.fptis_platform.service.auth.RsaService;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import fpt.is.bnk.fptis_platform.service.auth.AuthService;
 import lombok.AccessLevel;
@@ -24,8 +25,6 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,18 +43,24 @@ import java.util.regex.Pattern;
 @Slf4j
 public class AuthServiceImpl implements AuthService {
 
+    // Service
     CurrentUserProvider currentUserProvider;
-    ProfileRepository profileRepository;
-    UserRepository userRepository;
-
     JwtService jwtService;
-
-    UserMapper userMapper;
+    RsaService rsaService;
 
     IdentityClient identityClient;
 
+    // Repository
+    ProfileRepository profileRepository;
+    UserRepository userRepository;
+
+    // Mapper
+    UserMapper userMapper;
+
+    // Caching
     RedisTemplate<String, String> redis;
 
+    // Utils
     PasswordEncoder passwordEncoder;
     ErrorNormalizer errorNormalizer;
 
@@ -66,7 +71,8 @@ public class AuthServiceImpl implements AuthService {
             UserMapper userMapper, IdentityClient identityClient,
             @Qualifier("redisStringTemplate") RedisTemplate<String, String> redis,
             PasswordEncoder passwordEncoder,
-            ErrorNormalizer errorNormalizer
+            ErrorNormalizer errorNormalizer,
+            RsaService rsaService
     ) {
         this.currentUserProvider = currentUserProvider;
         this.profileRepository = profileRepository;
@@ -77,6 +83,7 @@ public class AuthServiceImpl implements AuthService {
         this.redis = redis;
         this.passwordEncoder = passwordEncoder;
         this.errorNormalizer = errorNormalizer;
+        this.rsaService = rsaService;
     }
 
     @Value("${app.jwt.access-token-expiration}")
@@ -130,12 +137,18 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Map<String, ? extends Serializable> login(LoginRequest request) {
         try {
+            var password = request.getPassword();
+
+            if (request.getIsCrypted() != null && request.getIsCrypted())
+                password = rsaService.decrypt(password);
+
+
             exchangeToken(Map.of(
                     "grant_type", "password",
                     "client_id", clientId,
                     "client_secret", clientSecret,
                     "username", request.getUsername(),
-                    "password", request.getPassword(),
+                    "password", password,
                     "scope", "openid"
             ));
 

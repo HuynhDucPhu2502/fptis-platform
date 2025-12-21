@@ -27,6 +27,7 @@ public class CustomBearerTokenResolver implements BearerTokenResolver {
             "/api/auth/login",
             "/api/auth/register",
             "/api/auth/refresh",
+            "/api/auth/public-key",
 
             "/actuator/health/**",
 
