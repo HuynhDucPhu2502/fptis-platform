@@ -41,61 +41,85 @@ public class DailyLogReportServiceImpl implements fpt.is.bnk.fptis_platform.serv
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<byte[]> generateReport() throws Exception {
+    public byte[] generateReport() throws Exception {
         User user = currentUserProvider.getCurrentUser();
         JRSwapFileVirtualizer virtualizer = null;
 
-        try (Stream<DailyLog> dailyLogStream = dailyLogRepository.
-                streamAllByProfile_ProfileId(user.getProfile().getProfileId())) {
+        try (
+                Stream<DailyLog> dailyLogStream =
+                        dailyLogRepository.streamAllByProfile_ProfileId(user.getProfile().getProfileId())
+        ) {
 
-
+            // =====================================================
+            // Chuẩn bị swap file
+            // =====================================================
             File swapDir = new File(SWAP_PATH);
             if (!swapDir.exists()) swapDir.mkdirs();
-            JRSwapFile swapFile = new JRSwapFile(SWAP_PATH, 8192, 100);
 
+            JRSwapFile swapFile = new JRSwapFile(SWAP_PATH, 8192, 100);
             virtualizer = new JRSwapFileVirtualizer(500, swapFile, true);
 
+            // =====================================================
+            // Chuẩn bị dữ liệu
+            // =====================================================
+
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            Iterator<DailyLogReportObject> reportIterator = dailyLogStream.map(dl -> new DailyLogReportObject(
-                    dl.getId(),
-                    dl.getMainTask(),
-                    dl.getResult(),
-                    dl.getWorkDate() != null ? dl.getWorkDate().format(fmt) : ""
-            )).iterator();
+            JRDataSource dataSource = mapToDailyLogReportObject(dailyLogStream, fmt);
 
-            JRDataSource dataSource = new DailyLogDataSource(reportIterator);
+            // =====================================================
+            // Lấy template
+            // =====================================================
+            InputStream jrxmlStream = resourceLoader
+                    .getResource("classpath:reports/Daily_Log_Report.jrxml")
+                    .getInputStream();
 
-            InputStream jrxmlStream = resourceLoader.getResource("classpath:reports/Daily_Log_Report.jrxml").getInputStream();
             JasperReport jasperReport = JasperCompileManager.compileReport(jrxmlStream);
 
+            // =====================================================
+            // Định nghĩa tham số
+            // =====================================================
             Map<String, Object> params = new HashMap<>();
+
+            InputStream logoStream = resourceLoader
+                    .getResource("classpath:reports/fpt-is-logo.png")
+                    .getInputStream();
+
             params.put("USERNAME", user.getUsername());
             params.put("CURRENT_DATE", new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
-            params.put(JRParameter.REPORT_LOCALE, new Locale("vi", "VN"));
-
-            params.put(JRParameter.REPORT_VIRTUALIZER, virtualizer);
-
-            InputStream logoStream = resourceLoader.getResource("classpath:reports/fpt-is-logo.png").getInputStream();
             params.put("LOGO", logoStream);
 
+            params.put(JRParameter.REPORT_LOCALE, Locale.forLanguageTag("vi-VN"));
+            params.put(JRParameter.REPORT_VIRTUALIZER, virtualizer);
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, dataSource);
 
-            byte[] pdfBytes = JasperExportManager.exportReportToPdf(jasperPrint);
+            // =====================================================
+            // Đẩy dữ liệu vào + xuất báo cáo
+            // =====================================================
+            JasperPrint jasperPrint = JasperFillManager
+                    .fillReport(jasperReport, params, dataSource);
 
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=daily-log-report.pdf")
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(pdfBytes);
+            return JasperExportManager.exportReportToPdf(jasperPrint);
 
-        } catch (Exception e) {
-            log.error("Lỗi xuất báo cáo: ", e);
-            throw e;
+
         } finally {
             if (virtualizer != null) {
                 virtualizer.cleanup();
-                log.info("Đã xóa sạch bộ nhớ tạm ổ đĩa.");
             }
         }
+    }
+
+    private static JRDataSource mapToDailyLogReportObject(Stream<DailyLog> dailyLogStream, DateTimeFormatter fmt) {
+        Iterator<DailyLogReportObject> reportIterator = dailyLogStream.map(dl -> new DailyLogReportObject(
+                dl.getId(),
+                dl.getMainTask(),
+                dl.getResult(),
+                dl.getWorkDate() != null ? dl.getWorkDate().format(fmt) : ""
+        )).iterator();
+
+        // =====================================================
+        // Định nghĩa Datasource để đẩy vào Jasper
+        // =====================================================
+        JRDataSource dataSource = new DailyLogDataSource(reportIterator);
+        return dataSource;
     }
 }

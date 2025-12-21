@@ -5,6 +5,8 @@ import fpt.is.bnk.fptis_platform.service.daily_log.impl.DailyLogReportServiceImp
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +26,13 @@ public class AttendanceReportController {
 
     @GetMapping("/report")
     public ResponseEntity<byte[]> exportDailyLog() throws Exception {
-        return attendanceReportService.generateReport();
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "inline; filename=attendance_report.pdf"
+                )
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(attendanceReportService.generateReport());
     }
 
 }
