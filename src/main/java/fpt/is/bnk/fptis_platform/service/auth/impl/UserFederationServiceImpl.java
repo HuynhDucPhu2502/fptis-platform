@@ -3,6 +3,7 @@ package fpt.is.bnk.fptis_platform.service.auth.impl;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.repository.UserRepository;
+import fpt.is.bnk.fptis_platform.service.auth.UserFederationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RemoteUserAppServiceImpl implements fpt.is.bnk.fptis_platform.service.auth.RemoteUserAppService {
+public class UserFederationServiceImpl implements UserFederationService {
 
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;

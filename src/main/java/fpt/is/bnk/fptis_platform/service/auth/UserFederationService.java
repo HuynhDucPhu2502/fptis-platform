@@ -6,7 +6,7 @@ import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
  * Admin 12/1/2025
  *
  **/
-public interface RemoteUserAppService {
+public interface UserFederationService {
     RemoteUser getByUsername(String username);
 
     RemoteUser getByEmail(String email);

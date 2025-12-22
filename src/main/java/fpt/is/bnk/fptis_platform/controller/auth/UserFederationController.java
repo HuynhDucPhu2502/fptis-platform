@@ -2,7 +2,7 @@ package fpt.is.bnk.fptis_platform.controller.auth;
 
 import fpt.is.bnk.fptis_platform.dto.identity.internal.CheckPasswordRequest;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
-import fpt.is.bnk.fptis_platform.service.auth.RemoteUserAppService;
+import fpt.is.bnk.fptis_platform.service.auth.UserFederationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/internal/users")
 @RequiredArgsConstructor
-public class RemoteUserController {
+public class UserFederationController {
 
-    private final RemoteUserAppService service;
+    private final UserFederationService service;
 
     @GetMapping("/{username}")
     public ResponseEntity<RemoteUser> getByUsername(@PathVariable String username) {
