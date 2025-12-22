@@ -62,7 +62,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-
+        <!--=====================================================================================-->
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
@@ -111,7 +111,7 @@
             <artifactId>barcode4j</artifactId>
             <version>${barcode4j.version}</version>
         </dependency>
-
+        <!--=====================================================================================-->
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
             <artifactId>camunda-bpm-spring-boot-starter</artifactId>
@@ -153,8 +153,7 @@
             <artifactId>nashorn-core</artifactId>
             <version>${nashorn.version}</version>
         </dependency>
-
-
+        <!--=====================================================================================-->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
