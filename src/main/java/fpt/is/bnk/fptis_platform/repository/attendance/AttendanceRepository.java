@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.repository;
+package fpt.is.bnk.fptis_platform.repository.attendance;
 
 import fpt.is.bnk.fptis_platform.entity.attendance.Attendance;
 import org.springframework.data.domain.Page;

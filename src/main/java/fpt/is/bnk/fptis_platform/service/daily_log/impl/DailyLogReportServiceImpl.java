@@ -3,7 +3,7 @@ package fpt.is.bnk.fptis_platform.service.daily_log.impl;
 import fpt.is.bnk.fptis_platform.dto.report.daily_log.DailyLogReportObject;
 import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import fpt.is.bnk.fptis_platform.entity.user.User;
-import fpt.is.bnk.fptis_platform.repository.DailyLogRepository;
+import fpt.is.bnk.fptis_platform.repository.daily_log.DailyLogRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import fpt.is.bnk.fptis_platform.service.daily_log.datasource.DailyLogDataSource;
 import lombok.AccessLevel;
@@ -14,9 +14,6 @@ import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.fill.JRSwapFileVirtualizer;
 import net.sf.jasperreports.engine.util.JRSwapFile;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

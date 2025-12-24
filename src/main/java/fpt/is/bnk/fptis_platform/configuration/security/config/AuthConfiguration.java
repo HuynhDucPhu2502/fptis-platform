@@ -2,7 +2,7 @@ package fpt.is.bnk.fptis_platform.configuration.security.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
-import fpt.is.bnk.fptis_platform.repository.PermissionRepository;
+import fpt.is.bnk.fptis_platform.repository.auth.PermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

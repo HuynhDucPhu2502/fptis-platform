@@ -4,7 +4,7 @@ import fpt.is.bnk.fptis_platform.dto.report.attendance.AttendanceReportObject;
 import fpt.is.bnk.fptis_platform.dto.report.attendance.StatusCountReportObject;
 import fpt.is.bnk.fptis_platform.entity.attendance.Attendance;
 import fpt.is.bnk.fptis_platform.entity.user.User;
-import fpt.is.bnk.fptis_platform.repository.AttendanceRepository;
+import fpt.is.bnk.fptis_platform.repository.attendance.AttendanceRepository;
 import fpt.is.bnk.fptis_platform.service.attendance.AttendanceStatisticService;
 import fpt.is.bnk.fptis_platform.service.attendance.utils.AttendanceMapper;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;

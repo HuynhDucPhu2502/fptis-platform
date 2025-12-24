@@ -5,7 +5,7 @@ import fpt.is.bnk.fptis_platform.dto.request.daily_log.UpdateDailyLogRequest;
 import fpt.is.bnk.fptis_platform.dto.response.daily_log.DailyLogResponse;
 import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import fpt.is.bnk.fptis_platform.mapper.DailyLogMapper;
-import fpt.is.bnk.fptis_platform.repository.DailyLogRepository;
+import fpt.is.bnk.fptis_platform.repository.daily_log.DailyLogRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import fpt.is.bnk.fptis_platform.service.daily_log.DailyLogService;
 import lombok.AccessLevel;

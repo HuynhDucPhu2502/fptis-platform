@@ -5,7 +5,7 @@ import fpt.is.bnk.fptis_platform.advice.exception.AppException;
 import fpt.is.bnk.fptis_platform.dto.response.attendance.AttendanceResponse;
 import fpt.is.bnk.fptis_platform.entity.attendance.Attendance;
 import fpt.is.bnk.fptis_platform.mapper.AttendanceMapper;
-import fpt.is.bnk.fptis_platform.repository.AttendanceRepository;
+import fpt.is.bnk.fptis_platform.repository.attendance.AttendanceRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

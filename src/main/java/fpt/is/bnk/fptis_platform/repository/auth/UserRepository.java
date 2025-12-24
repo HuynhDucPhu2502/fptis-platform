@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.repository;
+package fpt.is.bnk.fptis_platform.repository.auth;
 
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;

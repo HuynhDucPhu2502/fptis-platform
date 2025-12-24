@@ -2,7 +2,7 @@ package fpt.is.bnk.fptis_platform.service.user.impl;
 
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 import fpt.is.bnk.fptis_platform.mapper.UserMapper;
-import fpt.is.bnk.fptis_platform.repository.UserRepository;
+import fpt.is.bnk.fptis_platform.repository.auth.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

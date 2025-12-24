@@ -1,7 +1,7 @@
 package fpt.is.bnk.fptis_platform.service.common.impl;
 
 import fpt.is.bnk.fptis_platform.entity.user.User;
-import fpt.is.bnk.fptis_platform.repository.UserRepository;
+import fpt.is.bnk.fptis_platform.repository.auth.UserRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
