@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.repository;
+package fpt.is.bnk.fptis_platform.repository.daily_log;
 
 import fpt.is.bnk.fptis_platform.entity.daily_log.DailyLog;
 import jakarta.persistence.QueryHint;
@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -24,7 +23,7 @@ public interface DailyLogRepository extends JpaRepository<DailyLog, Long> {
                                                    Pageable pageable);
 
     Optional<DailyLog> findByIdAndProfile_ProfileId(Long id, Long profileUserId);
-    
+
     @QueryHints(value = @QueryHint(name = org.hibernate.jpa.QueryHints.HINT_FETCH_SIZE, value = "500"))
     @Transactional(readOnly = true)
     Stream<DailyLog> streamAllByProfile_ProfileId(Long profileId);

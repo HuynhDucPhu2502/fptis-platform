@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.repository;
+package fpt.is.bnk.fptis_platform.repository.work_request;
 
 import fpt.is.bnk.fptis_platform.entity.work_request.WorkRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
