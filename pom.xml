@@ -114,44 +114,20 @@
         <!--=====================================================================================-->
         <dependency>
             <groupId>org.camunda.bpm.springboot</groupId>
-            <artifactId>camunda-bpm-spring-boot-starter</artifactId>
+            <artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
             <version>${camunda.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.camunda.bpm</groupId>
-            <artifactId>camunda-engine-plugin-spin</artifactId>
-            <version>${camunda.version}</version>
+            <groupId>org.camunda.community.rest</groupId>
+            <artifactId>camunda-platform-7-rest-client-spring-boot-starter</artifactId>
+            <version>7.24.0</version>
         </dependency>
+        <!--=====================================================================================-->
         <dependency>
-            <groupId>org.camunda.spin</groupId>
-            <artifactId>camunda-spin-dataformat-all</artifactId>
-            <version>${camunda.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.camunda.bpm</groupId>
-            <artifactId>camunda-engine-plugin-connect</artifactId>
-            <version>${camunda.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.camunda.connect</groupId>
-            <artifactId>camunda-connect-http-client</artifactId>
-            <version>${camunda.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.camunda.bpm.springboot</groupId>
-            <artifactId>camunda-bpm-spring-boot-starter-webapp</artifactId>
-            <version>${camunda.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.nashorn</groupId>
-            <artifactId>nashorn-core</artifactId>
-            <version>${nashorn.version}</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+            <version>2.40.14</version>
+            <scope>compile</scope>
         </dependency>
         <!--=====================================================================================-->
         <dependency>

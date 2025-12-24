@@ -1,0 +1,24 @@
+package fpt.is.bnk.fptis_platform.service.s3;
+
+import org.springframework.web.multipart.MultipartFile;
+
+/**
+ * Admin 12/24/2025
+ *
+ **/
+public interface S3Service {
+    String uploadFile(
+            MultipartFile file, String key,
+            boolean getUrl, long maxFileSize
+    );
+
+    String uploadFile(
+            MultipartFile file, String folder,
+            String fileName, boolean getUrl,
+            long maxFileSize
+    );
+
+    void deleteFileByKey(String key);
+
+    void deleteFileByUrl(String url);
+}
