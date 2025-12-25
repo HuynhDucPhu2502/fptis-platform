@@ -137,10 +137,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Map<String, ? extends Serializable> login(LoginRequest request) {
         try {
-            var password = request.getPassword();
+            String password;
+
 
             if (request.getIsCrypted() != null && request.getIsCrypted())
-                password = rsaService.decrypt(password);
+                password = rsaService.decrypt(request.getPassword());
+            else
+                password = request.getPassword();
 
 
             exchangeToken(Map.of(

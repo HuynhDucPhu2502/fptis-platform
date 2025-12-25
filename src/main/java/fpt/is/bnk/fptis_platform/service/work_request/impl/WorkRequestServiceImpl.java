@@ -5,8 +5,7 @@ import fpt.is.bnk.fptis_platform.dto.response.work_request.WorkRequestResponse;
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.entity.work_request.WorkRequest;
 import fpt.is.bnk.fptis_platform.mapper.WorkRequestMapper;
-import fpt.is.bnk.fptis_platform.repository.AttendanceRepository;
-import fpt.is.bnk.fptis_platform.repository.WorkRequestRepository;
+import fpt.is.bnk.fptis_platform.repository.work_request.WorkRequestRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import fpt.is.bnk.fptis_platform.service.work_request.WorkRequestService;
 import lombok.AccessLevel;
@@ -15,9 +14,7 @@ import lombok.experimental.FieldDefaults;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -78,7 +75,7 @@ public class WorkRequestServiceImpl implements WorkRequestService {
             response.setTaskCreateTime(
                     task.getCreateTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime()
             );
-            
+
             Map<String, Object> dmnResult = (Map<String, Object>) runtimeService
                     .getVariable(task.getExecutionId(), "isEligibleForLeave");
             if (dmnResult != null)

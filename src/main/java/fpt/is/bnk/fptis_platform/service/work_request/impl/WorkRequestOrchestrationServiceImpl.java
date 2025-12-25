@@ -6,34 +6,27 @@ import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.entity.work_request.WorkRequest;
 import fpt.is.bnk.fptis_platform.entity.work_request.WorkRequestStatus;
 import fpt.is.bnk.fptis_platform.mapper.WorkRequestMapper;
-import fpt.is.bnk.fptis_platform.repository.AttendanceRepository;
-import fpt.is.bnk.fptis_platform.repository.WorkRequestRepository;
+import fpt.is.bnk.fptis_platform.repository.attendance.AttendanceRepository;
+import fpt.is.bnk.fptis_platform.repository.work_request.WorkRequestRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
-import fpt.is.bnk.fptis_platform.service.work_request.WorkRequestWorkflowService;
+import fpt.is.bnk.fptis_platform.service.work_request.WorkRequestOrchestrationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.task.Task;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.thymeleaf.TemplateEngine;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Admin 12/19/2025
- *
- **/
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class WorkRequestWorkflowWorkflowServiceImpl implements WorkRequestWorkflowService {
+public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestrationService {
 
     static String PROCESS_ID = "intern_work_request_process";
 
@@ -44,34 +37,27 @@ public class WorkRequestWorkflowWorkflowServiceImpl implements WorkRequestWorkfl
     WorkRequestRepository workRequestRepository;
     AttendanceRepository attendanceRepository;
 
-    // Flow
+    // Camunda
     RuntimeService runtimeService;
+    TaskService taskService;
 
     // Mapper
     WorkRequestMapper workRequestMapper;
-    TaskService taskService;
-
-    // Mail Sender
-    JavaMailSender javaMailSender;
-    TemplateEngine templateEngine;
 
     @Override
     @Transactional
     public void createRequest(WorkRequestRequest request) {
         User user = currentUserProvider.getCurrentUser();
-
         WorkRequest workRequest = workRequestMapper.toWorkRequest(request);
         workRequest.setWorkRequestStatus(WorkRequestStatus.PENDING_SYSTEM);
         workRequest.setProfile(user.getProfile());
-
-
         var savedWorkRequest = workRequestRepository.save(workRequest);
-
 
         Map<String, Object> vars = new HashMap<>();
         vars.put("requestId", savedWorkRequest.getId());
         vars.put("profileId", user.getProfile().getProfileId());
 
+        // Khởi tạo process qua REST Client tới Server A
         var processInstance = runtimeService.startProcessInstanceByKey(
                 PROCESS_ID,
                 savedWorkRequest.getId().toString(),
@@ -84,10 +70,7 @@ public class WorkRequestWorkflowWorkflowServiceImpl implements WorkRequestWorkfl
 
     @Override
     @Transactional
-    public void aggregateStatistics(
-            Long requestId,
-            DelegateExecution execution
-    ) {
+    public void aggregateStatistics(Long requestId) {
         WorkRequest workRequest = workRequestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy yêu cầu: " + requestId));
 
@@ -111,10 +94,6 @@ public class WorkRequestWorkflowWorkflowServiceImpl implements WorkRequestWorkfl
         workRequest.setOnTimeRatio(onTimeRatio);
         workRequest.setEarlyCheckoutRatio(earlyRatio);
         workRequestRepository.save(workRequest);
-
-        execution.setVariable("totalAttendance", totalAttendance);
-        execution.setVariable("onTimeCheckInRatio", onTimeRatio);
-        execution.setVariable("earlyCheckoutRatio", earlyRatio);
     }
 
     @Transactional
@@ -122,41 +101,27 @@ public class WorkRequestWorkflowWorkflowServiceImpl implements WorkRequestWorkfl
     public void updateStatus(Long requestId, String status, String reason) {
         WorkRequest workRequest = workRequestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy yêu cầu: " + requestId));
-
         workRequest.setWorkRequestStatus(WorkRequestStatus.valueOf(status));
-
-        if (reason != null)
-            workRequest.setAdminNote(reason);
-
+        if (reason != null) workRequest.setAdminNote(reason);
         workRequestRepository.save(workRequest);
-
     }
 
     @Transactional
     @Override
     public void completeMentorReview(MentorReviewRequest reviewRequest) {
-        Task task = taskService.createTaskQuery()
-                .taskId(reviewRequest.getTaskId())
-                .singleResult();
-
-        if (task == null)
-            throw new RuntimeException("Không tìm thấy Task này");
-
+        Task task = taskService.createTaskQuery().taskId(reviewRequest.getTaskId()).singleResult();
+        if (task == null) throw new RuntimeException("Không tìm thấy Task");
 
         Long requestId = (Long) runtimeService.getVariable(task.getExecutionId(), "requestId");
         User mentor = currentUserProvider.getCurrentUser();
-
-        WorkRequest workRequest = workRequestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy yêu cầu: " + requestId));
-
+        WorkRequest workRequest = workRequestRepository.findById(requestId).orElseThrow();
         workRequest.setApproverName(mentor.getEmail());
         workRequestRepository.save(workRequest);
 
-        Map<String, Object> variables = new HashMap<>();
-        variables.put("isApproved", reviewRequest.isApproved());
-        variables.put("mentorComment", reviewRequest.getComment());
-
+        Map<String, Object> variables = Map.of(
+                "isApproved", reviewRequest.isApproved(),
+                "mentorComment", reviewRequest.getComment()
+        );
         taskService.complete(reviewRequest.getTaskId(), variables);
     }
-
 }
