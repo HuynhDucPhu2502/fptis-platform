@@ -1,6 +1,7 @@
 package fpt.is.bnk.fptis_platform.dto.response.process;
 
 import fpt.is.bnk.fptis_platform.entity.proccess.ProcessStatus;
+import fpt.is.bnk.fptis_platform.entity.proccess.ResourceType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,7 +18,7 @@ public class ProcessDefinitionResponse {
     Long id;
     String name;
     String processCode;
-    String camundaProcessKey;
     Integer activeVersion;
     ProcessStatus status;
+    ResourceType resourceType;
 }

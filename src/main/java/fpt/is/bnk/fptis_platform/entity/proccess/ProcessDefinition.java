@@ -36,9 +36,6 @@ public class ProcessDefinition extends BaseEntity {
     @Column(name = "process_code", nullable = false, unique = true)
     String processCode;
 
-    @Column(name = "camunda_process_key", nullable = false)
-    String camundaProcessKey;
-
     // ==========================
     // Version Control
     // ==========================

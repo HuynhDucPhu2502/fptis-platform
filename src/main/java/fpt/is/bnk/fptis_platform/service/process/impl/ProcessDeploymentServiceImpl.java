@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,6 @@ public class ProcessDeploymentServiceImpl implements fpt.is.bnk.fptis_platform.s
                         ProcessDefinition newDef = new ProcessDefinition();
                         newDef.setProcessCode(request.getProcessCode());
                         newDef.setName(request.getName());
-                        newDef.setCamundaProcessKey(request.getCamundaProcessKey());
                         newDef.setActiveVersion(0);
                         newDef.setStatus(ProcessStatus.DRAFT);
                         return processRepo.save(newDef);
@@ -100,7 +100,6 @@ public class ProcessDeploymentServiceImpl implements fpt.is.bnk.fptis_platform.s
             version.setVersion(currentMaxVersion + 1);
             version.setDeploymentId(deployment.getId());
             version.setS3Key(s3Key);
-            version.setDescription(request.getDescription());
             version.setDeployedAt(LocalDateTime.now());
             versionRepo.save(version);
 
@@ -140,14 +139,21 @@ public class ProcessDeploymentServiceImpl implements fpt.is.bnk.fptis_platform.s
     @Override
     public List<ProcessDefinitionResponse> getAllProcesses() {
         return processRepo.findAll().stream()
-                .map(process -> ProcessDefinitionResponse.builder()
-                        .id(process.getId())
-                        .name(process.getName())
-                        .processCode(process.getProcessCode())
-                        .camundaProcessKey(process.getCamundaProcessKey())
-                        .activeVersion(process.getActiveVersion())
-                        .status(process.getStatus())
-                        .build())
+                .map(process -> {
+                    ResourceType latestType = process.getVersions().stream()
+                            .max(Comparator.comparing(ProcessVersion::getVersion))
+                            .map(ProcessVersion::getResourceType)
+                            .orElse(ResourceType.BPMN);
+
+                    return ProcessDefinitionResponse.builder()
+                            .id(process.getId())
+                            .name(process.getName())
+                            .processCode(process.getProcessCode())
+                            .activeVersion(process.getActiveVersion())
+                            .status(process.getStatus())
+                            .resourceType(latestType)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 

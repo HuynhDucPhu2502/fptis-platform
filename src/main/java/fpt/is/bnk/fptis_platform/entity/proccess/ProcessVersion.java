@@ -42,7 +42,6 @@ public class ProcessVersion extends BaseEntity {
     // ==========================
     private Integer version;
     private String deploymentId;
-    private String description;
     private LocalDateTime deployedAt;
 
     // ==========================

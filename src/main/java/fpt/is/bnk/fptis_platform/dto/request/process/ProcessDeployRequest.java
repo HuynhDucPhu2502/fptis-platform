@@ -17,6 +17,4 @@ import lombok.experimental.FieldDefaults;
 public class ProcessDeployRequest {
     String name;
     String processCode;
-    String camundaProcessKey;
-    String description;
 }
