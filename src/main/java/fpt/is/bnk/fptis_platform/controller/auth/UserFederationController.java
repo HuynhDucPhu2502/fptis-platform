@@ -3,6 +3,7 @@ package fpt.is.bnk.fptis_platform.controller.auth;
 import fpt.is.bnk.fptis_platform.dto.identity.internal.CheckPasswordRequest;
 import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 import fpt.is.bnk.fptis_platform.service.auth.UserFederationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,10 @@ import org.springframework.web.bind.annotation.*;
  * Admin 12/1/2025
  *
  **/
+@Tag(
+        name = "User Federation (Internal)",
+        description = "Internal APIs for user federation, including user lookup and credential verification for identity providers."
+)
 @RestController
 @RequestMapping("/api/internal/users")
 @RequiredArgsConstructor

@@ -6,6 +6,7 @@ import fpt.is.bnk.fptis_platform.dto.report.attendance.StatusCountReportObject;
 import fpt.is.bnk.fptis_platform.dto.response.attendance.AttendanceResponse;
 import fpt.is.bnk.fptis_platform.service.attendance.AttendanceService;
 import fpt.is.bnk.fptis_platform.service.attendance.AttendanceStatisticService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,6 +24,10 @@ import java.util.List;
  * Admin 12/12/2025
  *
  **/
+@Tag(
+        name = "Attendance",
+        description = "CRUD REST APIs for Attendance"
+)
 @RestController
 @RequestMapping("/api/attendances")
 @RequiredArgsConstructor

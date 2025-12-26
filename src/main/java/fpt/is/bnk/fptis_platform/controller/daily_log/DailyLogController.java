@@ -6,6 +6,7 @@ import fpt.is.bnk.fptis_platform.dto.request.daily_log.CreateDailyLogRequest;
 import fpt.is.bnk.fptis_platform.dto.request.daily_log.UpdateDailyLogRequest;
 import fpt.is.bnk.fptis_platform.dto.response.daily_log.DailyLogResponse;
 import fpt.is.bnk.fptis_platform.service.daily_log.DailyLogService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,10 @@ import org.springframework.web.bind.annotation.*;
  * Admin 11/28/2025
  *
  **/
+@Tag(
+        name = "Daily Logs",
+        description = "APIs for managing intern daily logs, including CRUD operations and report generation."
+)
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

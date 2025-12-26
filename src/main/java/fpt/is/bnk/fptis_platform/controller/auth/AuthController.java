@@ -8,6 +8,7 @@ import fpt.is.bnk.fptis_platform.dto.identity.RemoteUser;
 import fpt.is.bnk.fptis_platform.dto.request.authentication.LoginRequest;
 import fpt.is.bnk.fptis_platform.dto.request.authentication.RegistrationRequest;
 import fpt.is.bnk.fptis_platform.service.auth.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,10 @@ import java.util.Map;
  * Admin 11/25/2025
  *
  **/
+@Tag(
+        name = "Auth Controller",
+        description = "Authentication and authorization APIs including login, logout, token refresh, registration, and current user profile."
+)
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
