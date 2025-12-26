@@ -32,10 +32,12 @@ public class ErrorNormalizer {
 
     private Map<String, ErrorCode> initErrorCodeMap() {
         Map<String, ErrorCode> map = new HashMap<>();
+
         map.put("User exists with same username", ErrorCode.USER_EXISTED);
         map.put("User exists with same email", ErrorCode.EMAIL_EXISTED);
         map.put("User name is missing", ErrorCode.USERNAME_IS_MISSING);
         map.put("Invalid user credentials", ErrorCode.INVALID_CREDENTIALS);
+
         return map;
     }
 
