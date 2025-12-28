@@ -9,6 +9,7 @@ import fpt.is.bnk.fptis_platform.mapper.WorkRequestMapper;
 import fpt.is.bnk.fptis_platform.repository.attendance.AttendanceRepository;
 import fpt.is.bnk.fptis_platform.repository.work_request.WorkRequestRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
+import fpt.is.bnk.fptis_platform.service.process.ProcessQueryService;
 import fpt.is.bnk.fptis_platform.service.work_request.WorkRequestOrchestrationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,23 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestrationService {
 
-    static String PROCESS_ID = "intern_work_request_process";
+    //  =================================================
+    // Metadata
+    //  =================================================
+
+    // Process Metadata
+    static String BPMN_PROCESS_ID = "intern_work_request_process";
+    static String VAR_TOTAL_ATTENDANCE = "totalAttendance";
+    static String VAR_ON_TIME_RATIO = "onTimeCheckInRatio";
+    static String VAR_EARLY_CHECKOUT_RATIO = "earlyCheckoutRatio";
+
+    // General Metadata
+    static String VAR_REQUEST_ID = "requestId";
+    static String STATUS_ON_TIME = "CHECKED_IN_ON_TIME";
+    static String STATUS_LATE = "CHECKED_IN_LATE";
+    static String STATUS_EARLY_LEAVE = "CHECKED_OUT_EARLY";
+
+    //  =================================================
 
     // Provider
     CurrentUserProvider currentUserProvider;
@@ -44,6 +61,9 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
     // Mapper
     WorkRequestMapper workRequestMapper;
 
+    // Service
+    ProcessQueryService processQueryService;
+
     @Override
     @Transactional
     public void createRequest(WorkRequestRequest request) {
@@ -54,12 +74,18 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
         var savedWorkRequest = workRequestRepository.save(workRequest);
 
         Map<String, Object> vars = new HashMap<>();
-        vars.put("requestId", savedWorkRequest.getId());
-        vars.put("profileId", user.getProfile().getProfileId());
 
-        // Khởi tạo process qua REST Client tới Server A
+        processQueryService
+                .getVariablesByProcessCode(BPMN_PROCESS_ID)
+                .forEach(v -> {
+                    if (v.getDefaultValue() != null && !v.getDefaultValue().isBlank()) {
+                        vars.put(v.getVariableName(), castToType(v.getDefaultValue(), v.getDataType()));
+                    }
+                });
+        vars.put(VAR_REQUEST_ID, savedWorkRequest.getId());
+
         var processInstance = runtimeService.startProcessInstanceByKey(
-                PROCESS_ID,
+                BPMN_PROCESS_ID,
                 savedWorkRequest.getId().toString(),
                 vars
         );
@@ -82,13 +108,22 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
             statsMap.put((String) row[0], (Long) row[1]);
         }
 
-        long onTimeIn = statsMap.getOrDefault("CHECKED_IN_ON_TIME", 0L);
-        long lateIn = statsMap.getOrDefault("CHECKED_IN_LATE", 0L);
-        long earlyOut = statsMap.getOrDefault("CHECKED_OUT_EARLY", 0L);
+        long onTimeIn = statsMap.getOrDefault(STATUS_ON_TIME, 0L);
+        long lateIn = statsMap.getOrDefault(STATUS_LATE, 0L);
+        long earlyOut = statsMap.getOrDefault(STATUS_EARLY_LEAVE, 0L);
 
         int totalAttendance = (int) (onTimeIn + lateIn);
         double onTimeRatio = totalAttendance > 0 ? (double) onTimeIn / totalAttendance : 0.0;
         double earlyRatio = totalAttendance > 0 ? (double) earlyOut / totalAttendance : 0.0;
+
+        if (workRequest.getProcessInstanceId() != null) {
+            Map<String, Object> workflowVars = new HashMap<>();
+            workflowVars.put(VAR_TOTAL_ATTENDANCE, totalAttendance);
+            workflowVars.put(VAR_ON_TIME_RATIO, onTimeRatio);
+            workflowVars.put(VAR_EARLY_CHECKOUT_RATIO, earlyRatio);
+
+            runtimeService.setVariables(workRequest.getProcessInstanceId(), workflowVars);
+        }
 
         workRequest.setTotalAttendance(totalAttendance);
         workRequest.setOnTimeRatio(onTimeRatio);
@@ -123,5 +158,21 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
                 "mentorComment", reviewRequest.getComment()
         );
         taskService.complete(reviewRequest.getTaskId(), variables);
+    }
+
+
+    // ==============================================================================
+    private Object castToType(String value, String dataType) {
+        if (dataType == null) return value;
+        try {
+            return switch (dataType.toUpperCase()) {
+                case "INTEGER", "LONG" -> Long.parseLong(value);
+                case "DOUBLE", "FLOAT" -> Double.parseDouble(value);
+                case "BOOLEAN" -> Boolean.parseBoolean(value);
+                default -> value;
+            };
+        } catch (Exception e) {
+            return value;
+        }
     }
 }

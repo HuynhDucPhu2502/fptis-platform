@@ -1,9 +1,7 @@
 package fpt.is.bnk.fptis_platform.service.process.impl;
 
 import fpt.is.bnk.fptis_platform.dto.request.process.ProcessDeployRequest;
-import fpt.is.bnk.fptis_platform.dto.response.process.ProcessDefinitionResponse;
-import fpt.is.bnk.fptis_platform.dto.response.process.ProcessTaskResponse;
-import fpt.is.bnk.fptis_platform.dto.response.process.ProcessVariableResponse;
+import fpt.is.bnk.fptis_platform.dto.request.process.ProcessVariableUpdateRequest;
 import fpt.is.bnk.fptis_platform.entity.proccess.*;
 import fpt.is.bnk.fptis_platform.entity.proccess.constant.ProcessStatus;
 import fpt.is.bnk.fptis_platform.entity.proccess.constant.ResourceType;
@@ -11,6 +9,7 @@ import fpt.is.bnk.fptis_platform.repository.process.ProcessDefinitionRepository;
 import fpt.is.bnk.fptis_platform.repository.process.ProcessTaskRepository;
 import fpt.is.bnk.fptis_platform.repository.process.ProcessVariableRepository;
 import fpt.is.bnk.fptis_platform.repository.process.ProcessVersionRepository;
+import fpt.is.bnk.fptis_platform.service.process.ProcessDeploymentService;
 import fpt.is.bnk.fptis_platform.service.s3.S3Service;
 import fpt.is.bnk.fptis_platform.util.WorkflowParserUtils;
 import lombok.AccessLevel;
@@ -25,9 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Admin 12/25/2025
@@ -35,7 +32,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ProcessDeploymentServiceImpl implements fpt.is.bnk.fptis_platform.service.process.ProcessDeploymentService {
+public class ProcessDeploymentServiceImpl implements ProcessDeploymentService {
 
     // Service
     S3Service s3Service;
@@ -137,6 +134,7 @@ public class ProcessDeploymentServiceImpl implements fpt.is.bnk.fptis_platform.s
 
             // Cập nhật Master Data
             processDef.setActiveVersion(version.getVersion());
+            processDef.setName(request.getName());
             processDef.setLatestS3Key(s3Key);
             processDef.setLatestDeploymentId(deployment.getId());
             processDef.setStatus(ProcessStatus.ACTIVE);
@@ -148,69 +146,18 @@ public class ProcessDeploymentServiceImpl implements fpt.is.bnk.fptis_platform.s
         }
     }
 
-
+    @Transactional
     @Override
-    public List<ProcessTaskResponse> getTasksByProcessCode(String processCode) {
+    public void updateVariableDefaults(String processCode, List<ProcessVariableUpdateRequest> updates) {
         ProcessDefinition def = processRepository.findByProcessCode(processCode)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy quy trình"));
 
-        return def.getTasks().stream()
-                .map(task -> ProcessTaskResponse.builder()
-                        .taskCode(task.getTaskCode())
-                        .taskName(task.getTaskName())
-                        .permission(task.getPermissionRole())
-                        .isActive(task.isActive())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ProcessVariableResponse> getVariablesByProcessCode(String processCode) {
-        ProcessDefinition def = processRepository.findByProcessCode(processCode)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy quy trình"));
-
-        return def.getVariables().stream()
-                .map(var -> ProcessVariableResponse.builder()
-                        .variableName(var.getVariableName())
-                        .displayName(var.getDisplayName())
-                        .defaultValue(var.getDefaultValue())
-                        .dataType(var.getDataType())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<ProcessDefinitionResponse> getAllProcesses() {
-        return processRepository.findAll().stream()
-                .map(process -> {
-                    ResourceType latestType = process.getVersions().stream()
-                            .max(Comparator.comparing(ProcessVersion::getVersion))
-                            .map(ProcessVersion::getResourceType)
-                            .orElse(ResourceType.BPMN);
-
-                    return ProcessDefinitionResponse.builder()
-                            .id(process.getId())
-                            .name(process.getName())
-                            .processCode(process.getProcessCode())
-                            .activeVersion(process.getActiveVersion())
-                            .status(process.getStatus())
-                            .resourceType(latestType)
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public String getProcessXmlContent(String processCode) {
-        ProcessDefinition processDef = processRepository.findByProcessCode(processCode)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy quy trình với mã: " + processCode));
-
-        String s3Key = processDef.getLatestS3Key();
-        if (s3Key == null || s3Key.isEmpty()) {
-            throw new RuntimeException("Quy trình chưa có file đính kèm.");
-        }
-
-        return s3Service.downloadFileAsText(s3Key);
+        updates.forEach(update -> processVariableRepository
+                .findByProcessIdAndVariableName(def.getId(), update.getVariableName())
+                .ifPresent(var -> {
+                    var.setDefaultValue(update.getDefaultValue());
+                    processVariableRepository.save(var);
+                }));
     }
 
 }

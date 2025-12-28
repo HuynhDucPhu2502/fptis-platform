@@ -2,9 +2,7 @@ package fpt.is.bnk.fptis_platform.controller.process;
 
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;
 import fpt.is.bnk.fptis_platform.dto.request.process.ProcessDeployRequest;
-import fpt.is.bnk.fptis_platform.dto.response.process.ProcessDefinitionResponse;
-import fpt.is.bnk.fptis_platform.dto.response.process.ProcessTaskResponse;
-import fpt.is.bnk.fptis_platform.dto.response.process.ProcessVariableResponse;
+import fpt.is.bnk.fptis_platform.dto.request.process.ProcessVariableUpdateRequest;
 import fpt.is.bnk.fptis_platform.service.process.ProcessDeploymentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -38,39 +36,16 @@ public class ProcessDeploymentController {
                 .build();
     }
 
-    @GetMapping("/{processCode}/tasks")
-    public ApiResponse<List<ProcessTaskResponse>> getTasks(@PathVariable String processCode) {
-        List<ProcessTaskResponse> tasks = processDeploymentService.
-                getTasksByProcessCode(processCode);
+    @PutMapping("/{processCode}/variables/defaults")
+    public ApiResponse<String> updateVariableDefaults(
+            @PathVariable String processCode,
+            @RequestBody List<ProcessVariableUpdateRequest> request
+    ) {
 
-        return ApiResponse.<List<ProcessTaskResponse>>builder()
-                .result(tasks)
-                .build();
-    }
+        processDeploymentService.updateVariableDefaults(processCode, request);
 
-    @GetMapping("/{processCode}/variables")
-    public ApiResponse<List<ProcessVariableResponse>> getVariables(@PathVariable String processCode) {
-        List<ProcessVariableResponse> tasks = processDeploymentService.
-                getVariablesByProcessCode(processCode);
-
-        return ApiResponse.<List<ProcessVariableResponse>>builder()
-                .result(tasks)
-                .build();
-    }
-
-    @GetMapping("/all")
-    public ApiResponse<List<ProcessDefinitionResponse>> getAllProcesses() {
-        List<ProcessDefinitionResponse> processes = processDeploymentService.getAllProcesses();
-        return ApiResponse.<List<ProcessDefinitionResponse>>builder()
-                .result(processes)
-                .build();
-    }
-
-    @GetMapping("/{processCode}/xml")
-    public ApiResponse<String> getXml(@PathVariable String processCode) {
-        String xmlContent = processDeploymentService.getProcessXmlContent(processCode);
         return ApiResponse.<String>builder()
-                .result(xmlContent)
+                .result("Cập nhật giá trị mặc định thành công")
                 .build();
     }
 
