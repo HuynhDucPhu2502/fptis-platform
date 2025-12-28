@@ -200,4 +200,17 @@ public class ProcessDeploymentServiceImpl implements fpt.is.bnk.fptis_platform.s
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public String getProcessXmlContent(String processCode) {
+        ProcessDefinition processDef = processRepository.findByProcessCode(processCode)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy quy trình với mã: " + processCode));
+
+        String s3Key = processDef.getLatestS3Key();
+        if (s3Key == null || s3Key.isEmpty()) {
+            throw new RuntimeException("Quy trình chưa có file đính kèm.");
+        }
+
+        return s3Service.downloadFileAsText(s3Key);
+    }
+
 }

@@ -66,5 +66,13 @@ public class ProcessDeploymentController {
                 .build();
     }
 
+    @GetMapping("/{processCode}/xml")
+    public ApiResponse<String> getXml(@PathVariable String processCode) {
+        String xmlContent = processDeploymentService.getProcessXmlContent(processCode);
+        return ApiResponse.<String>builder()
+                .result(xmlContent)
+                .build();
+    }
+
 
 }

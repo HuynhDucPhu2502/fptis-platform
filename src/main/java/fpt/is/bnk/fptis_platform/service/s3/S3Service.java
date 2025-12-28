@@ -21,4 +21,6 @@ public interface S3Service {
     void deleteFileByKey(String key);
 
     void deleteFileByUrl(String url);
+
+    String downloadFileAsText(String key);
 }

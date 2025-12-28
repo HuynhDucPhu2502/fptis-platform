@@ -22,4 +22,6 @@ public interface ProcessDeploymentService {
     List<ProcessVariableResponse> getVariablesByProcessCode(String processCode);
 
     List<ProcessDefinitionResponse> getAllProcesses();
+
+    String getProcessXmlContent(String processCode);
 }

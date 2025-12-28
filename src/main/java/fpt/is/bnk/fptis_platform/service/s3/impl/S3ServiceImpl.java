@@ -7,10 +7,15 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Admin 12/24/2025
@@ -110,6 +115,31 @@ public class S3ServiceImpl implements fpt.is.bnk.fptis_platform.service.s3.S3Ser
         String key = url.substring(base.length());
 
         deleteFileByKey(key);
+    }
+
+    @Override
+    public String downloadFileAsText(String key) {
+        try {
+            if (key == null || key.isEmpty())
+                throw new S3UploadException(
+                        "Key của tệp không hợp lệ",
+                        HttpStatus.BAD_REQUEST
+                );
+
+
+            GetObjectRequest getObjectRequest = GetObjectRequest
+                    .builder()
+                    .bucket(awsBucketName)
+                    .key(key)
+                    .build();
+
+            ResponseBytes<GetObjectResponse> objectBytes = s3Client.getObjectAsBytes(getObjectRequest);
+            return objectBytes.asString(StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new S3UploadException(
+                    "Không thể đọc nội dung tệp từ S3",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 
