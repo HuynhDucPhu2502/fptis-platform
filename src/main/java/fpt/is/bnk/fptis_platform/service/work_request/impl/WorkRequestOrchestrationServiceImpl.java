@@ -34,13 +34,17 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
     //  =================================================
 
     // Process Metadata
+
     static String BPMN_PROCESS_ID = "intern_work_request_process";
     static String VAR_TOTAL_ATTENDANCE = "totalAttendance";
     static String VAR_ON_TIME_RATIO = "onTimeCheckInRatio";
+
     static String VAR_EARLY_CHECKOUT_RATIO = "earlyCheckoutRatio";
 
     // General Metadata
+
     static String VAR_REQUEST_ID = "requestId";
+
     static String STATUS_ON_TIME = "CHECKED_IN_ON_TIME";
     static String STATUS_LATE = "CHECKED_IN_LATE";
     static String STATUS_EARLY_LEAVE = "CHECKED_OUT_EARLY";
