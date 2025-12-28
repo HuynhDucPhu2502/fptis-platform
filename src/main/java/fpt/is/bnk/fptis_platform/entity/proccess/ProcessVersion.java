@@ -1,6 +1,7 @@
 package fpt.is.bnk.fptis_platform.entity.proccess;
 
 import fpt.is.bnk.fptis_platform.entity.BaseEntity;
+import fpt.is.bnk.fptis_platform.entity.proccess.constant.ResourceType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

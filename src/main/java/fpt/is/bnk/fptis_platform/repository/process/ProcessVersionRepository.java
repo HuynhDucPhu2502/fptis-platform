@@ -1,7 +1,7 @@
 package fpt.is.bnk.fptis_platform.repository.process;
 
 import fpt.is.bnk.fptis_platform.entity.proccess.ProcessVersion;
-import fpt.is.bnk.fptis_platform.entity.proccess.ResourceType;
+import fpt.is.bnk.fptis_platform.entity.proccess.constant.ResourceType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

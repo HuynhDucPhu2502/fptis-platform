@@ -4,6 +4,7 @@ import fpt.is.bnk.fptis_platform.dto.ApiResponse;
 import fpt.is.bnk.fptis_platform.dto.request.process.ProcessDeployRequest;
 import fpt.is.bnk.fptis_platform.dto.response.process.ProcessDefinitionResponse;
 import fpt.is.bnk.fptis_platform.dto.response.process.ProcessTaskResponse;
+import fpt.is.bnk.fptis_platform.dto.response.process.ProcessVariableResponse;
 import fpt.is.bnk.fptis_platform.service.process.ProcessDeploymentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class ProcessDeploymentController {
 
     ProcessDeploymentService processDeploymentService;
 
-    @PostMapping(value = "/deloy", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/deploy", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<String> deploy(
             @RequestPart("request") ProcessDeployRequest request,
             @RequestPart("file") MultipartFile file
@@ -43,6 +44,16 @@ public class ProcessDeploymentController {
                 getTasksByProcessCode(processCode);
 
         return ApiResponse.<List<ProcessTaskResponse>>builder()
+                .result(tasks)
+                .build();
+    }
+
+    @GetMapping("/{processCode}/variables")
+    public ApiResponse<List<ProcessVariableResponse>> getVariables(@PathVariable String processCode) {
+        List<ProcessVariableResponse> tasks = processDeploymentService.
+                getVariablesByProcessCode(processCode);
+
+        return ApiResponse.<List<ProcessVariableResponse>>builder()
                 .result(tasks)
                 .build();
     }

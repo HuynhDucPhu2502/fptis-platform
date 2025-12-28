@@ -1,7 +1,7 @@
 package fpt.is.bnk.fptis_platform.dto.response.process;
 
-import fpt.is.bnk.fptis_platform.entity.proccess.ProcessStatus;
-import fpt.is.bnk.fptis_platform.entity.proccess.ResourceType;
+import fpt.is.bnk.fptis_platform.entity.proccess.constant.ProcessStatus;
+import fpt.is.bnk.fptis_platform.entity.proccess.constant.ResourceType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

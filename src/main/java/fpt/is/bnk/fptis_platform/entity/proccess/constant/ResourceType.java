@@ -1,4 +1,4 @@
-package fpt.is.bnk.fptis_platform.entity.proccess;
+package fpt.is.bnk.fptis_platform.entity.proccess.constant;
 
 /**
  * Admin 12/25/2025

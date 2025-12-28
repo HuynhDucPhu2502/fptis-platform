@@ -1,6 +1,7 @@
 package fpt.is.bnk.fptis_platform.entity.proccess;
 
 import fpt.is.bnk.fptis_platform.entity.BaseEntity;
+import fpt.is.bnk.fptis_platform.entity.proccess.constant.ProcessStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -68,5 +69,9 @@ public class ProcessDefinition extends BaseEntity {
     @OneToMany(mappedBy = "process", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @OrderBy("taskCode ASC")
     List<ProcessTask> tasks;
+
+    @OneToMany(mappedBy = "process", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OrderBy("variableName ASC")
+    List<ProcessVariable> variables;
 
 }
