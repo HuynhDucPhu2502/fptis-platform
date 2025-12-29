@@ -1,7 +1,6 @@
 package fpt.is.bnk.fptis_platform.service.process.impl;
 
 import fpt.is.bnk.fptis_platform.dto.request.process.ProcessDeployRequest;
-import fpt.is.bnk.fptis_platform.dto.request.process.ProcessVariableUpdateRequest;
 import fpt.is.bnk.fptis_platform.entity.proccess.*;
 import fpt.is.bnk.fptis_platform.entity.proccess.constant.ProcessStatus;
 import fpt.is.bnk.fptis_platform.entity.proccess.constant.ResourceType;
@@ -25,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Admin 12/25/2025
@@ -134,7 +134,18 @@ public class ProcessDeploymentServiceImpl implements ProcessDeploymentService {
 
             // Cập nhật Master Data
             processDef.setActiveVersion(version.getVersion());
-            processDef.setName(request.getName());
+
+            String resolvedName = Optional
+                    .ofNullable(request.getName())
+                    .filter(s -> !s.isBlank())
+                    .orElseGet(() ->
+                            Optional
+                                    .ofNullable(processDef.getName())
+                                    .filter(s -> !s.isBlank())
+                                    .orElse(processDef.getProcessCode())
+                    );
+            processDef.setName(resolvedName);
+
             processDef.setLatestS3Key(s3Key);
             processDef.setLatestDeploymentId(deployment.getId());
             processDef.setStatus(ProcessStatus.ACTIVE);
@@ -144,20 +155,6 @@ public class ProcessDeploymentServiceImpl implements ProcessDeploymentService {
         } catch (IOException e) {
             throw new RuntimeException("Lỗi triển khai quy trình: " + e.getMessage());
         }
-    }
-
-    @Transactional
-    @Override
-    public void updateVariableDefaults(String processCode, List<ProcessVariableUpdateRequest> updates) {
-        ProcessDefinition def = processRepository.findByProcessCode(processCode)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy quy trình"));
-
-        updates.forEach(update -> processVariableRepository
-                .findByProcessIdAndVariableName(def.getId(), update.getVariableName())
-                .ifPresent(var -> {
-                    var.setDefaultValue(update.getDefaultValue());
-                    processVariableRepository.save(var);
-                }));
     }
 
 }

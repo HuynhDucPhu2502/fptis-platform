@@ -1,5 +1,6 @@
 package fpt.is.bnk.fptis_platform.dto.request.process;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +17,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProcessDeployRequest {
     String name;
+
+    @NotBlank(message = "Process code không được để trống")
     String processCode;
 }

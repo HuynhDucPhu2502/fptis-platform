@@ -33,10 +33,7 @@ public class ProcessVariable extends BaseEntity {
 
     @Column(name = "display_name")
     String displayName;
-
-    @Column(name = "default_value")
-    String defaultValue;
-
+    
     @Column(name = "data_type")
     String dataType;
 

@@ -15,6 +15,5 @@ import lombok.experimental.FieldDefaults;
 public class ProcessVariableResponse {
     String variableName;
     String displayName;
-    String defaultValue;
     String dataType;
 }
