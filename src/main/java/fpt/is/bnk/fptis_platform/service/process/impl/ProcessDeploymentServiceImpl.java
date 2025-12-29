@@ -1,6 +1,8 @@
 package fpt.is.bnk.fptis_platform.service.process.impl;
 
+import fpt.is.bnk.fptis_platform.advice.exception.CustomEntityNotFoundException;
 import fpt.is.bnk.fptis_platform.dto.request.process.ProcessDeployRequest;
+import fpt.is.bnk.fptis_platform.dto.request.process.TaskPermissionRequest;
 import fpt.is.bnk.fptis_platform.entity.proccess.*;
 import fpt.is.bnk.fptis_platform.entity.proccess.constant.ProcessStatus;
 import fpt.is.bnk.fptis_platform.entity.proccess.constant.ResourceType;
@@ -157,4 +159,14 @@ public class ProcessDeploymentServiceImpl implements ProcessDeploymentService {
         }
     }
 
+    @Override
+    public void updateTaskPermission(TaskPermissionRequest request) {
+        ProcessTask task = processTaskRepository
+                .findByProcessProcessCodeAndTaskCode(request.getProcessCode(), request.getTaskCode())
+                .orElseThrow(() -> new CustomEntityNotFoundException("Không tìm thấy Task: " + request.getTaskCode()));
+
+        task.setPermissionRole(request.getPermissionRole());
+
+        processTaskRepository.save(task);
+    }
 }

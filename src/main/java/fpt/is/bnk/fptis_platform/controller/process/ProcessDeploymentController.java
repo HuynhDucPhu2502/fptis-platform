@@ -2,6 +2,7 @@ package fpt.is.bnk.fptis_platform.controller.process;
 
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;
 import fpt.is.bnk.fptis_platform.dto.request.process.ProcessDeployRequest;
+import fpt.is.bnk.fptis_platform.dto.request.process.TaskPermissionRequest;
 import fpt.is.bnk.fptis_platform.service.process.ProcessDeploymentService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,16 @@ public class ProcessDeploymentController {
         String deploymentId = processDeploymentService.deployNewProcess(request, file);
         return ApiResponse.<String>builder()
                 .result("Triển khai thành công. Deployment ID: " + deploymentId)
+                .build();
+    }
+
+    @PutMapping("/tasks/permission")
+    public ApiResponse<String> updatePermission(
+            @RequestBody TaskPermissionRequest request
+    ) {
+        processDeploymentService.updateTaskPermission(request);
+        return ApiResponse.<String>builder()
+                .result("Cập nhật quyền cho Task thành công")
                 .build();
     }
 

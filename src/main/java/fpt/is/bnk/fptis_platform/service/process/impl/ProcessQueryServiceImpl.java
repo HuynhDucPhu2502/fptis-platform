@@ -57,7 +57,6 @@ public class ProcessQueryServiceImpl implements ProcessQueryService {
                 .map(var -> ProcessVariableResponse.builder()
                         .variableName(var.getVariableName())
                         .displayName(var.getDisplayName())
-                        .defaultValue(var.getDefaultValue())
                         .dataType(var.getDataType())
                         .build())
                 .collect(Collectors.toList());

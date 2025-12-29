@@ -2,6 +2,7 @@ package fpt.is.bnk.fptis_platform.advice.handler;
 
 import fpt.is.bnk.fptis_platform.advice.base.ErrorCode;
 import fpt.is.bnk.fptis_platform.advice.exception.AppException;
+import fpt.is.bnk.fptis_platform.advice.exception.CustomAccessDeniedException;
 import fpt.is.bnk.fptis_platform.advice.exception.CustomDataIntegrityViolationException;
 import fpt.is.bnk.fptis_platform.advice.exception.CustomEntityNotFoundException;
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;
@@ -161,6 +162,22 @@ public class GlobalExceptionHandler {
         ApiResponse<Void> apiResponse = new ApiResponse<>();
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
+
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
+    }
+
+    @ExceptionHandler(value = CustomAccessDeniedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleCustomAccessDeniedException(
+            CustomAccessDeniedException e
+    ) {
+        log.warn("[SECURITY] Access Denied: {}", e.getMessage());
+
+        var errorCode = ErrorCode.ACCESS_DENIED;
+        var errorMessage = e.getMessage() == null ? errorCode.getMessage() : e.getMessage();
+
+        ApiResponse<Void> apiResponse = new ApiResponse<>();
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorMessage);
 
         return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }

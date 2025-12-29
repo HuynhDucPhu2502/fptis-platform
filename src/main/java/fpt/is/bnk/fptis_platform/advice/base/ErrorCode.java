@@ -14,7 +14,9 @@ public enum ErrorCode {
     // ===== System / Common ===== 1000 - 1099
     INVALID_KEY(1000, "Khoá không hợp lệ", HttpStatus.BAD_REQUEST),
     METHOD_NOT_ALLOWED(1001, "Phương thức HTTP không được hỗ trợ", HttpStatus.METHOD_NOT_ALLOWED),
+    ACCESS_DENIED(1002, "Truy cập bị từ chối", HttpStatus.FORBIDDEN),
     UNCATEGORIZED_EXCEPTION(1099, "Lỗi không xác định", HttpStatus.INTERNAL_SERVER_ERROR),
+
 
     // ===== Authentication / Authorization ===== 1100 - 1199
     UNAUTHENTICATED(1100, "Chưa xác thực", HttpStatus.UNAUTHORIZED),

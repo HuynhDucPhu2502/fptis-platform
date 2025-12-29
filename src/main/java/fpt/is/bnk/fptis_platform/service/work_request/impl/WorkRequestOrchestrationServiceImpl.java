@@ -1,5 +1,6 @@
 package fpt.is.bnk.fptis_platform.service.work_request.impl;
 
+import fpt.is.bnk.fptis_platform.advice.exception.CustomAccessDeniedException;
 import fpt.is.bnk.fptis_platform.dto.request.work_request.MentorReviewRequest;
 import fpt.is.bnk.fptis_platform.dto.request.work_request.WorkRequestRequest;
 import fpt.is.bnk.fptis_platform.entity.user.User;
@@ -9,7 +10,7 @@ import fpt.is.bnk.fptis_platform.mapper.WorkRequestMapper;
 import fpt.is.bnk.fptis_platform.repository.attendance.AttendanceRepository;
 import fpt.is.bnk.fptis_platform.repository.work_request.WorkRequestRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
-import fpt.is.bnk.fptis_platform.service.process.ProcessQueryService;
+import fpt.is.bnk.fptis_platform.service.process.ProcessAccessService;
 import fpt.is.bnk.fptis_platform.service.work_request.WorkRequestOrchestrationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.task.Task;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,8 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
     // Process Metadata
 
     static String BPMN_PROCESS_ID = "intern_work_request_process";
+    static String ACTIVITY_MENTOR_REVIEW_ID = "user_task_mentor_review";
+
     static String VAR_TOTAL_ATTENDANCE = "totalAttendance";
     static String VAR_ON_TIME_RATIO = "onTimeCheckInRatio";
 
@@ -66,7 +70,7 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
     WorkRequestMapper workRequestMapper;
 
     // Service
-    ProcessQueryService processQueryService;
+    ProcessAccessService processAccessService;
 
     @Override
     @Transactional
@@ -78,14 +82,6 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
         var savedWorkRequest = workRequestRepository.save(workRequest);
 
         Map<String, Object> vars = new HashMap<>();
-
-        processQueryService
-                .getVariablesByProcessCode(BPMN_PROCESS_ID)
-                .forEach(v -> {
-                    if (v.getDefaultValue() != null && !v.getDefaultValue().isBlank()) {
-                        vars.put(v.getVariableName(), castToType(v.getDefaultValue(), v.getDataType()));
-                    }
-                });
         vars.put(VAR_REQUEST_ID, savedWorkRequest.getId());
 
         var processInstance = runtimeService.startProcessInstanceByKey(
@@ -148,6 +144,12 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
     @Transactional
     @Override
     public void completeMentorReview(MentorReviewRequest reviewRequest) {
+        if (!processAccessService.canExecuteTask(
+                BPMN_PROCESS_ID,
+                ACTIVITY_MENTOR_REVIEW_ID)
+        ) throw new CustomAccessDeniedException("Bạn không có quyền thực hiện bước này");
+
+
         Task task = taskService.createTaskQuery().taskId(reviewRequest.getTaskId()).singleResult();
         if (task == null) throw new RuntimeException("Không tìm thấy Task");
 
@@ -166,17 +168,4 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
 
 
     // ==============================================================================
-    private Object castToType(String value, String dataType) {
-        if (dataType == null) return value;
-        try {
-            return switch (dataType.toUpperCase()) {
-                case "INTEGER", "LONG" -> Long.parseLong(value);
-                case "DOUBLE", "FLOAT" -> Double.parseDouble(value);
-                case "BOOLEAN" -> Boolean.parseBoolean(value);
-                default -> value;
-            };
-        } catch (Exception e) {
-            return value;
-        }
-    }
 }
