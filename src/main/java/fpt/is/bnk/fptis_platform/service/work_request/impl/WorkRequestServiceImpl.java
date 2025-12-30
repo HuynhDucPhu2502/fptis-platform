@@ -1,10 +1,13 @@
 package fpt.is.bnk.fptis_platform.service.work_request.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fpt.is.bnk.fptis_platform.dto.response.process.ActionButtonResponse;
 import fpt.is.bnk.fptis_platform.dto.response.work_request.MentorTaskResponse;
 import fpt.is.bnk.fptis_platform.dto.response.work_request.WorkRequestResponse;
 import fpt.is.bnk.fptis_platform.entity.user.User;
 import fpt.is.bnk.fptis_platform.entity.work_request.WorkRequest;
 import fpt.is.bnk.fptis_platform.mapper.WorkRequestMapper;
+import fpt.is.bnk.fptis_platform.repository.process.ProcessTaskRepository;
 import fpt.is.bnk.fptis_platform.repository.work_request.WorkRequestRepository;
 import fpt.is.bnk.fptis_platform.service.common.CurrentUserProvider;
 import fpt.is.bnk.fptis_platform.service.work_request.WorkRequestService;
@@ -37,12 +40,16 @@ public class WorkRequestServiceImpl implements WorkRequestService {
 
     // Repository
     WorkRequestRepository workRequestRepository;
+    ProcessTaskRepository processTaskRepository;
 
     // Flow
     RuntimeService runtimeService;
 
     // Mapper
+    ObjectMapper objectMapper;
     WorkRequestMapper workRequestMapper;
+
+    // Service
     TaskService taskService;
 
 
@@ -81,6 +88,9 @@ public class WorkRequestServiceImpl implements WorkRequestService {
             if (dmnResult != null)
                 response.setSystemNote((String) dmnResult.get("reason"));
 
+            processTaskRepository.findByCamundaActivityId(task.getTaskDefinitionKey())
+                    .stream().findFirst()
+                    .ifPresent(processTask -> response.setButtons(parseButtons(processTask.getActionButtons())));
 
             return response;
         }).toList();
@@ -95,6 +105,18 @@ public class WorkRequestServiceImpl implements WorkRequestService {
         return myRequests.stream()
                 .map(workRequestMapper::toResponse)
                 .toList();
+    }
+
+    private List<ActionButtonResponse> parseButtons(String json) {
+        if (json == null || json.isBlank()) return List.of();
+        try {
+            return objectMapper.readValue(
+                    json,
+                    new com.fasterxml.jackson.core.type.TypeReference<>() {
+                    });
+        } catch (Exception e) {
+            return List.of();
+        }
     }
 
 }

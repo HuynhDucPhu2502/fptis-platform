@@ -1,5 +1,6 @@
 package fpt.is.bnk.fptis_platform.dto.response.work_request;
 
+import fpt.is.bnk.fptis_platform.dto.response.process.ActionButtonResponse;
 import fpt.is.bnk.fptis_platform.entity.work_request.WorkRequestType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Admin 12/20/2025
@@ -34,4 +36,6 @@ public class MentorTaskResponse {
     Double onTimeRatio;
     Double earlyCheckoutRatio;
     String systemNote;
+
+    List<ActionButtonResponse> buttons;
 }

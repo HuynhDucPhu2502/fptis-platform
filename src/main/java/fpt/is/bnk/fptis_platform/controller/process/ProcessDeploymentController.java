@@ -2,6 +2,7 @@ package fpt.is.bnk.fptis_platform.controller.process;
 
 import fpt.is.bnk.fptis_platform.dto.ApiResponse;
 import fpt.is.bnk.fptis_platform.dto.request.process.ProcessDeployRequest;
+import fpt.is.bnk.fptis_platform.dto.request.process.TaskActionsUpdateRequest;
 import fpt.is.bnk.fptis_platform.dto.request.process.TaskPermissionRequest;
 import fpt.is.bnk.fptis_platform.service.process.ProcessDeploymentService;
 import lombok.AccessLevel;
@@ -43,6 +44,16 @@ public class ProcessDeploymentController {
         processDeploymentService.updateTaskPermission(request);
         return ApiResponse.<String>builder()
                 .result("Cập nhật quyền cho Task thành công")
+                .build();
+    }
+
+    @PutMapping("/tasks/actions")
+    public ApiResponse<String> updateActions(
+            @RequestBody TaskActionsUpdateRequest request
+    ) {
+        processDeploymentService.updateTaskActions(request);
+        return ApiResponse.<String>builder()
+                .result("Cấu hình nút bấm thành công")
                 .build();
     }
 

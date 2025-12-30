@@ -1,7 +1,10 @@
 package fpt.is.bnk.fptis_platform.service.process.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import fpt.is.bnk.fptis_platform.advice.exception.CustomEntityNotFoundException;
 import fpt.is.bnk.fptis_platform.dto.request.process.ProcessDeployRequest;
+import fpt.is.bnk.fptis_platform.dto.request.process.TaskActionsUpdateRequest;
 import fpt.is.bnk.fptis_platform.dto.request.process.TaskPermissionRequest;
 import fpt.is.bnk.fptis_platform.entity.proccess.*;
 import fpt.is.bnk.fptis_platform.entity.proccess.constant.ProcessStatus;
@@ -45,6 +48,9 @@ public class ProcessDeploymentServiceImpl implements ProcessDeploymentService {
     ProcessVersionRepository versionRepository;
     ProcessTaskRepository processTaskRepository;
     ProcessVariableRepository processVariableRepository;
+
+    // Utils
+    ObjectMapper objectMapper;
 
     @Transactional
     @Override
@@ -169,4 +175,21 @@ public class ProcessDeploymentServiceImpl implements ProcessDeploymentService {
 
         processTaskRepository.save(task);
     }
+
+    @Override
+    public void updateTaskActions(TaskActionsUpdateRequest request) {
+        ProcessTask task = processTaskRepository
+                .findByProcessProcessCodeAndTaskCode(request.getProcessCode(), request.getTaskCode())
+                .orElseThrow(() -> new CustomEntityNotFoundException("Không tìm thấy Task"));
+
+        try {
+            String jsonButtons = objectMapper.writeValueAsString(request.getButtons());
+            task.setActionButtons(jsonButtons);
+
+            processTaskRepository.save(task);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Lỗi định dạng cấu hình nút bấm");
+        }
+    }
+
 }

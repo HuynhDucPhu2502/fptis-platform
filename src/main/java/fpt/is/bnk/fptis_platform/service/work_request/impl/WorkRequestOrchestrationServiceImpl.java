@@ -1,6 +1,7 @@
 package fpt.is.bnk.fptis_platform.service.work_request.impl;
 
 import fpt.is.bnk.fptis_platform.advice.exception.CustomAccessDeniedException;
+import fpt.is.bnk.fptis_platform.dto.request.process.TaskCompleteRequest;
 import fpt.is.bnk.fptis_platform.dto.request.work_request.MentorReviewRequest;
 import fpt.is.bnk.fptis_platform.dto.request.work_request.WorkRequestRequest;
 import fpt.is.bnk.fptis_platform.entity.user.User;
@@ -143,27 +144,37 @@ public class WorkRequestOrchestrationServiceImpl implements WorkRequestOrchestra
 
     @Transactional
     @Override
-    public void completeMentorReview(MentorReviewRequest reviewRequest) {
+    public void completeMentorReview(TaskCompleteRequest request) {
+
         if (!processAccessService.canExecuteTask(
                 BPMN_PROCESS_ID,
                 ACTIVITY_MENTOR_REVIEW_ID)
-        ) throw new CustomAccessDeniedException("Bạn không có quyền thực hiện bước này");
+        )
+            throw new CustomAccessDeniedException("Bạn không có quyền thực hiện bước này");
 
 
-        Task task = taskService.createTaskQuery().taskId(reviewRequest.getTaskId()).singleResult();
-        if (task == null) throw new RuntimeException("Không tìm thấy Task");
+        Task task = taskService
+                .createTaskQuery()
+                .taskId(request.getTaskId())
+                .singleResult();
 
-        Long requestId = (Long) runtimeService.getVariable(task.getExecutionId(), "requestId");
-        User mentor = currentUserProvider.getCurrentUser();
-        WorkRequest workRequest = workRequestRepository.findById(requestId).orElseThrow();
+        if (task == null)
+            throw new RuntimeException("Không tìm thấy Task hoặc Task đã hoàn thành");
+
+        Long requestId = (Long) runtimeService
+                .getVariable(task.getExecutionId(), "requestId");
+
+        User mentor = currentUserProvider
+                .getCurrentUser();
+
+        WorkRequest workRequest = workRequestRepository
+                .findById(requestId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy hồ sơ yêu cầu"));
+
         workRequest.setApproverName(mentor.getEmail());
         workRequestRepository.save(workRequest);
 
-        Map<String, Object> variables = Map.of(
-                "isApproved", reviewRequest.isApproved(),
-                "mentorComment", reviewRequest.getComment()
-        );
-        taskService.complete(reviewRequest.getTaskId(), variables);
+        taskService.complete(request.getTaskId(), request.getVariables());
     }
 
 

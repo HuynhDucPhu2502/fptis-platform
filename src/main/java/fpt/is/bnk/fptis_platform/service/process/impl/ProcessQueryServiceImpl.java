@@ -1,5 +1,8 @@
 package fpt.is.bnk.fptis_platform.service.process.impl;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fpt.is.bnk.fptis_platform.dto.response.process.ActionButtonResponse;
 import fpt.is.bnk.fptis_platform.dto.response.process.ProcessDefinitionResponse;
 import fpt.is.bnk.fptis_platform.dto.response.process.ProcessTaskResponse;
 import fpt.is.bnk.fptis_platform.dto.response.process.ProcessVariableResponse;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +37,9 @@ public class ProcessQueryServiceImpl implements ProcessQueryService {
     // Repository
     ProcessDefinitionRepository processRepository;
 
+    // Utils
+    ObjectMapper objectMapper;
+
     @Override
     public List<ProcessTaskResponse> getTasksByProcessCode(String processCode) {
         ProcessDefinition def = processRepository.findByProcessCode(processCode)
@@ -43,6 +50,7 @@ public class ProcessQueryServiceImpl implements ProcessQueryService {
                         .taskCode(task.getTaskCode())
                         .taskName(task.getTaskName())
                         .permission(task.getPermissionRole())
+                        .buttons(parseButtons(task.getActionButtons()))
                         .isActive(task.isActive())
                         .build())
                 .collect(Collectors.toList());
@@ -94,6 +102,19 @@ public class ProcessQueryServiceImpl implements ProcessQueryService {
         }
 
         return s3Service.downloadFileAsText(s3Key);
+    }
+
+
+    private List<ActionButtonResponse> parseButtons(String json) {
+        if (json == null || json.isBlank()) {
+            return Collections.emptyList();
+        }
+        try {
+            return objectMapper.readValue(json, new TypeReference<>() {
+            });
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 
 }
